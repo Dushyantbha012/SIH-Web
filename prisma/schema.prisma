@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(uuid()) @map("_id") @db.ObjectId
+  name      String
+  birthdate DateTime
+  education String
+  path      String[]
+  profiles  Profile[]  @relation("UserProfiles")
+  UserData  UserData[]
+  complete Boolean @default(false)
+}
+
+model Profile {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  profileName String      @unique
+  userId      String     @db.ObjectId
+  user        User       @relation("UserProfiles", fields: [userId], references: [id]) 
+  UserData    UserData[]
+  basicScore Int @default(0)
+}
+
+model UserData {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String  @db.ObjectId
+  profileId String  @db.ObjectId
+  qna       Json
+  user      User    @relation(fields: [userId], references: [id])
+  profile   Profile @relation(fields: [profileId], references: [id])
+  resume String
+  complete Boolean @default(false)
+
+}
