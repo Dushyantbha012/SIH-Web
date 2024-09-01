@@ -5,7 +5,7 @@ import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import {ClerkProvider} from '@clerk/nextjs'
 import ClientOnly from "@/components/ClientOnly";
-import ProfileModal from "@/components/modals/profileModal";
+import ProfileModal from "@/components/modals/Profile/profileModal";
 import ToasterProvider from "./providers/ToasterProvider";
 const inter = Inter({ subsets: ["latin"] });
 
