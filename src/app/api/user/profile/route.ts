@@ -24,7 +24,10 @@ export async function POST(req: Request, res: NextResponse) {
     // Convert birthdate to Date object
     const birthdateDate = new Date(birthdate);
 
-    const user = await db.user.create({
+    const user = await db.user.update({
+      where: {
+        id: profile.userId,
+      },
       data: {
         name,
         birthdate: birthdateDate,
