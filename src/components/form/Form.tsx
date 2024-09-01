@@ -125,9 +125,8 @@ export default function Form() {
                 <FormControl>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline">{`${
-                        formMethods.getValues().path
-                      }`}</Button>
+                      <Button variant="outline">{`${formMethods.getValues().path
+                        }`}</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56">
                       <DropdownMenuLabel>Panel Position</DropdownMenuLabel>

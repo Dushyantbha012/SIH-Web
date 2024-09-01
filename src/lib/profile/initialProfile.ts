@@ -7,7 +7,7 @@ export const initialProfile = async () => {
   } else {
     const dbUser = await db.user.findUnique({
       where: {
-        userId: user.id,
+        id: user.id,
       },
     });
     if (dbUser) {
@@ -16,7 +16,7 @@ export const initialProfile = async () => {
 
     const newUser = await db.user.create({
       data: {
-        userId: user.id,
+        id: user.id,
         name: `${user.firstName} ${user.lastName}`,
       },
     });

@@ -4,6 +4,9 @@ import "./globals.css";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import {ClerkProvider} from '@clerk/nextjs'
+import ClientOnly from "@/components/ClientOnly";
+import ProfileModal from "@/components/modals/profileModal";
+import ToasterProvider from "./providers/ToasterProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -21,9 +24,13 @@ export default function RootLayout({
 
       <html lang="en">
         <body className={inter.className}>
+          <ClientOnly>
+          <ToasterProvider/>
+          <ProfileModal/>
           <Header />
-          {children}
           <Footer />
+          </ClientOnly>
+          {children}
         </body>
       </html>
     </ClerkProvider>
