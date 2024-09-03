@@ -26,7 +26,7 @@ export async function POST(req: Request, res: NextResponse) {
       return new NextResponse("missing fields", { status: 404 });
     }
     console.log("third");
-    const user = await db.user.update({
+    let user = await db.user.update({
       where: {
         id: profile.id,
       },
@@ -46,13 +46,45 @@ export async function POST(req: Request, res: NextResponse) {
         },
       });
     });
-    const newUser = await db.profile.findMany({
-      where: {
-        userId: user.id,
-      },
-    });
+
+    const defaultDate = new Date("1900-01-01T00:00:00.000Z");
+    if (
+      user.name === "Anonymous" ||
+      user.birthdate === defaultDate ||
+      user.education === "Not specified" ||
+      user.path.length == 0
+    ) {
+      user = await db.user.update({
+        where: {
+          id: profile.id,
+        },
+        data: { complete: false },
+      });
+    } else {
+      const dbProfiles = await db.profile.findMany({
+        where: {
+          userId: user.id,
+        },
+      });
+      const len = dbProfiles.length;
+      for (let i = 0; i < len; i++) {
+        if (!path.includes(dbProfiles[i].profileName)) {
+          await db.profile.delete({
+            where: {
+              id: dbProfiles[i].id,
+            },
+          });
+        }
+      }
+      user = await db.user.update({
+        where: {
+          id: profile.id,
+        },
+        data: { complete: true },
+      });
+    }
     console.log("updated");
-    console.log(newUser);
+
     return NextResponse.json(user);
   } catch (error) {
     console.log("USER_PROFILE \n", error);

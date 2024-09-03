@@ -20,11 +20,13 @@ model User {
 
 model Profile {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  profileName String      @unique
-  userId      String     
+  profileName String
+  userId      String
   user        User       @relation("UserProfiles", fields: [userId], references: [id]) 
   UserData    UserData[]
-  basicScore Int @default(0)
+  basicScore  Int        @default(0)
+
+  @@unique([userId, profileName]) // Composite unique constraint
 }
 
 model UserData {
