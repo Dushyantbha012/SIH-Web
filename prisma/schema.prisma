@@ -8,20 +8,20 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid()) @map("_id") @db.ObjectId
-  name      String
-  birthdate DateTime
-  education String
-  path      String[]
-  profiles  Profile[]  @relation("UserProfiles")
-  UserData  UserData[]
-  complete Boolean @default(false)
+  id        String     @id @default(uuid()) @map("_id") 
+  name      String     @default("Anonymous") // Default name
+  birthdate DateTime   @default("1900-01-01T00:00:00.000Z")  // Default to January 1, 1900
+  education String     @default("Not specified") // Default education
+  path      String[]   @default([])          // Default to an empty array
+  profiles  Profile[]  @relation("UserProfiles") // No default needed for relations
+  UserData  UserData[] // No default needed for relations
+  complete  Boolean    @default(false)       // Default to false
 }
 
 model Profile {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   profileName String      @unique
-  userId      String     @db.ObjectId
+  userId      String     
   user        User       @relation("UserProfiles", fields: [userId], references: [id]) 
   UserData    UserData[]
   basicScore Int @default(0)
@@ -29,7 +29,7 @@ model Profile {
 
 model UserData {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String  @db.ObjectId
+  userId    String  
   profileId String  @db.ObjectId
   qna       Json
   user      User    @relation(fields: [userId], references: [id])

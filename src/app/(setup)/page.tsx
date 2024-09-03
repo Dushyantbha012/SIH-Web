@@ -1,18 +1,16 @@
+"use client";
+import useCreateProfile from "@/hooks/useCreateProfile";
 import { initialProfile } from "@/lib/profile/initialProfile";
-import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-async function SetupPage() {
-  const profile = await initialProfile();
-  const user = await currentUser();
+export default async function Home() {
+  const createProfile = useCreateProfile();
 
-  if (
-    profile?.name === "null null" ||
-    (user?.firstName === null && user?.lastName === null) ||
-    profile?.complete === false
-  ) {
-    return redirect(`/user`);
-  }
+  return (
+    <div>
+      <button onClick={createProfile.onOpen}>
+        click to open profile builder
+      </button>
+    </div>
+  );
 }
-
-export default SetupPage;

@@ -22,6 +22,7 @@ import {
 } from "../ui/form";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
@@ -29,47 +30,69 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { UploadButton } from "@/lib/uploadThing/uploadThing";
+import axios from "axios";
 interface FormData {
-  fullName: string;
+  name: string;
   birthdate: Date;
-  path: "Software" | "Marketing" | "Bussiness";
+  path: string[];
   education: "" | undefined;
-  linkedin: "";
-  github: "";
-  codeforces: "";
-  resume: String | null;
 }
 
-export default function Form() {
+export default function BasicForm() {
   const formMethods = useForm<FormData>({
     defaultValues: {
-      fullName: "",
+      name: "",
       birthdate: new Date(),
-      path: "Software",
       education: undefined,
-      linkedin: "",
-      github: "",
-      codeforces: "",
-      resume: null,
+      path: [],
     },
   });
-  const [username, setUsername] = useState("");
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [calendarOpen, setCalendarOpen] = useState(false);
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form submitted:", data);
+  const onSubmit = async (data: FormData) => {
+    try {
+      console.log("data: \n ", data);
+      const response = await axios.post("/api/user/profile", {
+        data: {
+          name: data.name,
+          birthdate: data.birthdate,
+          education: data.education,
+          path: data.path,
+        },
+      });
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    }
   };
 
+  type Checked = DropdownMenuCheckboxItemProps["checked"];
+  const [showStatusBar, setShowStatusBar] = React.useState<Checked>(true);
+  const [showActivityBar, setShowActivityBar] = React.useState<Checked>(false);
+  const [showPanel, setShowPanel] = React.useState<Checked>(false);
+  const handleCheckboxChange = (checked: boolean, value: string) => {
+    const currentPath = formMethods.getValues("path") || [];
+    if (checked) {
+      // Add to array if checked
+      formMethods.setValue("path", [...currentPath, value]);
+    } else {
+      // Remove from array if unchecked
+      formMethods.setValue(
+        "path",
+        currentPath.filter((item) => item !== value)
+      );
+    }
+  };
+  const paths = ["Software", "Marketing", "Business"];
   return (
     <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full border border-black">
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(onSubmit)}>
           <FormField
             control={formMethods.control}
-            name="fullName"
+            name="name"
             render={({ field }) => (
               <FormItem className="flex flex-nowrap items-center justify-left align-middle gap-3">
                 <FormLabel>Full Name</FormLabel>
@@ -111,42 +134,6 @@ export default function Form() {
                       </div>
                     </DialogContent>
                   </Dialog>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={formMethods.control}
-            name="path"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Path : </FormLabel>
-                <FormControl>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline">{`${formMethods.getValues().path
-                        }`}</Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
-                      <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuRadioGroup
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <DropdownMenuRadioItem value="Software">
-                          Software
-                        </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="Marketing">
-                          Marketing
-                        </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="Business">
-                          Business
-                        </DropdownMenuRadioItem>
-                      </DropdownMenuRadioGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -205,91 +192,42 @@ export default function Form() {
             )}
           />
           <hr className="pb-2 mt-2" />
-          {formMethods.getValues().path === "Software" ? (
-            <>
-              <FormField
-                control={formMethods.control}
-                name="linkedin"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>LinkedIn</FormLabel>
-                    <FormControl>
-                      <Input placeholder="LinkedIn" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={formMethods.control}
-                name="github"
-                render={({ field }) => (
-                  <FormItem className="pt-4">
-                    <FormLabel>GitHub</FormLabel>
-                    <FormControl>
-                      <Input placeholder="GitHub" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={formMethods.control}
-                name="codeforces"
-                render={({ field }) => (
-                  <FormItem className="pt-4">
-                    <FormLabel>Codeforces</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Codeforces" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </>
-          ) : (
-            <div></div>
-          )}
           <FormField
             control={formMethods.control}
-            name="resume"
-            render={({ field }) => (
-              <FormItem className="flex flex-nowrap items-center justify-left align-middle gap-3">
-                <FormLabel>Resume</FormLabel>
-                {field.value === null ? (
-                  <UploadButton
-                    endpoint="resume"
-                    onClientUploadComplete={(res) => {
-                      formMethods.setValue("resume", res[0].url);
-                      console.log(
-                        "value is : ",
-                        formMethods.getValues().resume
-                      );
-                      console.log("Files: ", res);
-                    }}
-                    onUploadError={(error: Error) => {
-                      alert(`ERROR! ${error.message}`);
-                    }}
-                  />
-                ) : (
-                  <div>
-                    <div className="flex flex-nowrap gap-3 items-center justify-center align-middle w-full">
-                      <div>Uploaded</div>
-                      <Button
-                        className="bg-red-500 p-3 hover:bg-white hover:text-red-500"
-                        onClick={() => {
-                          formMethods.setValue("resume", null);
-                        }}
-                      >
-                        X
-                      </Button>{" "}
-                    </div>
-                  </div>
-                )}
+            name="path"
+            render={() => (
+              <FormItem>
+                <FormLabel>Path : </FormLabel>
+                <FormControl>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline">Select Paths</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56">
+                      <DropdownMenuLabel>Paths</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {paths.map((path) => (
+                        <DropdownMenuCheckboxItem
+                          key={path}
+                          checked={formMethods
+                            .getValues("path")
+                            ?.includes(path)}
+                          onCheckedChange={(checked) =>
+                            handleCheckboxChange(checked, path)
+                          }
+                        >
+                          {path}
+                        </DropdownMenuCheckboxItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
+          <hr className="pb-2 mt-2" />
           <Button type="submit" className="mt-4 w-full">
             Submit
           </Button>
