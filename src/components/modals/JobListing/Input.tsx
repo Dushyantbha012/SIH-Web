@@ -3,26 +3,24 @@
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { BiDollar } from "react-icons/bi";
 
-interface FormData {
-    fullName: string;
-    birthdate: Date;
-    path: "Software" | "Marketing" | "Business";
-    education: string;
-    linkedin: string;
-    github: string;
-    codeforces: string;
-    resume: File | null;
+interface listingProps {
+    description: string;
+    responsibilites: string;
+    requirements: string;
+    experience: string;
+    location: string;
+    jobType: string;
+    mode: string;
 }
-
 interface InputProps {
-    id: keyof FormData;
+    id: keyof listingProps;
     label?: string;
     type?: string;
     disabled?: boolean;
     formatPrice?: boolean;
     required?: boolean;
-    register: UseFormRegister<FormData>;
-    errors: FieldErrors<FormData>;
+    register: UseFormRegister<listingProps>;
+    errors: FieldErrors<listingProps>;
 }
 
 const Input: React.FC<InputProps> = ({

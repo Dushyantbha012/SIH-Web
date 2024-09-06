@@ -1,7 +1,7 @@
 'use client';
 import Modal from "../modal";
 import Heading from "../ModalInputs/Heading";
-import Input from "../ModalInputs/Input";
+import Input from "./Input";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import React, { useState, useMemo } from "react";
@@ -10,10 +10,11 @@ import Calendar from "../ModalInputs/calendar";
 import { FaFileCode } from "react-icons/fa";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { IoMdBusiness } from "react-icons/io";
-import CategoryInput from "../ModalInputs/categoryInput";
 import { IoSchool } from "react-icons/io5";
 import { FaSchoolFlag } from "react-icons/fa6";
 import toast from "react-hot-toast";
+import axios from "axios";
+import CategoryInput from "../ModalInputs/categoryInput";
 const pathItems = [
     {
         label: 'Software',
@@ -55,7 +56,7 @@ const educationItems = [
 interface FormData {
     fullName: string;
     birthdate: Date;
-    path: "Software" | "Marketing" | "Business";
+    path: [];
     education: string;
     linkedin: string;
     github: string;
@@ -76,8 +77,6 @@ const ProfileModal = () => {
     const {
         register,
         handleSubmit,
-        setValue,
-        watch,
         formState: {
             errors,
         },
@@ -86,7 +85,7 @@ const ProfileModal = () => {
         defaultValues: {
             fullName: "",
             birthdate: new Date(),
-            path: "Software",
+            path: [],
             education: "",
             linkedin: "",
             github: "",
@@ -99,10 +98,18 @@ const ProfileModal = () => {
     const [step, setStep] = useState(STEPS.NAME);
     const [isLoading, setIsLoading] = useState(false);
     const [date, setDate] = useState<Date>(new Date());
-    const [path, setPath] = useState<"Software" | "Marketing" | "Business">("Software");
+    const [path, setPath] = useState<string[]>([]);
     const [education, setEducation] = useState<string>("");
     const [resume, setResume] = useState<File | null>(null);
-    
+    const addToPath = (newString: string) => {
+        if (path.includes(newString)) {
+            // If the string exists, remove it using filter
+            setPath((prevPath) => prevPath.filter((item) => item !== newString));
+          } else {
+            // If it doesn't exist, add the string
+            setPath((prevPath) => [...prevPath, newString]);
+          }
+      };
     const onBack = () => {
         setStep((value) => value - 1);
     };
@@ -111,7 +118,7 @@ const ProfileModal = () => {
         setStep((value) => value + 1);
     };
 
-    const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    const onSubmit: SubmitHandler<FieldValues> =async (data) => {
         if (step !== STEPS.RESUME) {
             return onNext();
         }
@@ -128,7 +135,25 @@ const ProfileModal = () => {
             resume: resume,
         };
         console.log(profileData);
-        toast.success("Form submitted");
+        try {
+            const response = await axios.post("/api/user/profile", {
+              data: {
+                name: data.fullName,
+                birthdate: date,
+                education: education,
+                path: path,
+              },
+            }).then(()=>{
+                toast.success("Profile Created !!");
+                createProfile.onClose();
+            }).catch(()=>{
+                toast.error("Something went wrong!!")
+            }).finally(()=>{
+                setIsLoading(false);
+            });
+          } catch (error) {
+            console.error("Error submitting data:", error);
+          }
     };
 
     const actionLabel = useMemo(() => {
@@ -189,8 +214,8 @@ const ProfileModal = () => {
                     {pathItems.map((item) => (
                         <div key={item.label} className="col-span-1">
                             <CategoryInput
-                                onClick={() => setPath(item.label as "Software" | "Marketing" | "Business")}
-                                selected={path === item.label}
+                                onClick={() => addToPath(item.label)}
+                                selected={path.includes(item.label)}
                                 label={item.label}
                                 icon={item.icon}
                             />
