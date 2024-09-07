@@ -41,21 +41,23 @@ model UserData {
 }
 
 model Recruiter {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  id           String       @id @default(uuid()) @map("_id")
+  name         String       @default("Anonymous") // Default name
+  companyName  String       @default("Company")
   aboutCompany String
   organization String
-  joblistings  Joblisting[] @relation("RecruiterJoblistings")
+  jobListings  Joblisting[] @relation("RecruiterJobListings") // Job listings associated with recruiter
 }
 
 model Joblisting {
   id               String    @id @default(auto()) @map("_id") @db.ObjectId
-  recruiterId      String    @db.ObjectId
-  recruiter        Recruiter @relation(fields: [recruiterId], references: [id], name: "RecruiterJoblistings")
+  recruiterId      String    
+  recruiter        Recruiter @relation(fields: [recruiterId], references: [id], name: "RecruiterJobListings")
   description      String
   responsibilities String
   requirements     String
   experience       String
   location         String
-  jobType          String // intern full time
-  mode             String // remote onsite hybrid
+  jobType          String // intern, full-time, etc.
+  mode             String // remote, on-site, hybrid
 }

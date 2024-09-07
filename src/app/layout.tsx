@@ -4,9 +4,10 @@ import "./globals.css";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
-import ProfileModal from "@/components/modals/Profile/profileModal";
+import ProfileModal from "@/components/modals/Profile/User/studentProfileModal";
 import ListJobModal from "@/components/modals/JobListing/listjobModal";
 import EnterRole from "@/components/modals/EnterRole/enterRole";
+import RecruiterProfileModal from "@/components/modals/Profile/Recruiter/recruiterProfileModal";
 const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "SIH Hiring",
@@ -26,6 +27,7 @@ export default async function RootLayout({
           <ProfileModal/>
           <ListJobModal/>
           <EnterRole/>
+          <RecruiterProfileModal/>
           {children}
           <Footer />
         </body>

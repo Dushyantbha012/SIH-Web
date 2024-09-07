@@ -1,12 +1,12 @@
 'use client';
-import Modal from "../modal";
-import Heading from "../ModalInputs/Heading";
+import Modal from "../../modal";
+import Heading from "../../ModalInputs/Heading";
 import Input from "./Input";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import React, { useState, useMemo } from "react";
 import useCreateProfile from "@/hooks/useCreateProfile";
-import Calendar from "../ModalInputs/calendar";
+import Calendar from "../../ModalInputs/calendar";
 import { FaFileCode } from "react-icons/fa";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { IoMdBusiness } from "react-icons/io";
@@ -14,7 +14,7 @@ import { IoSchool } from "react-icons/io5";
 import { FaSchoolFlag } from "react-icons/fa6";
 import toast from "react-hot-toast";
 import axios from "axios";
-import CategoryInput from "../ModalInputs/categoryInput";
+import CategoryInput from "../../ModalInputs/categoryInput";
 const pathItems = [
     {
         label: 'Software',

@@ -3,17 +3,19 @@ import Modal from "../modal";
 import Heading from "../ModalInputs/Heading";
 import React, { useState, useMemo } from "react";
 import CategoryInput from "../ModalInputs/categoryInput"
-import toast from "react-hot-toast";
-import useCreateJob from "@/hooks/useCreateJob";
 
 import { PiStudentBold } from "react-icons/pi";
 import { IoPersonAddSharp } from "react-icons/io5";
 import useEnterRole from "@/hooks/useEnterRole";
 import useCreateProfile from "@/hooks/useCreateProfile";
+import useRecruiterProfile from "@/hooks/useRecruiterProfile";
+import useRecruiter from "@/hooks/useRecruiter";
 const EnterRole = () => {
 
     const enterRole = useEnterRole();
+    const recruiter = useRecruiter();
     const createProfile = useCreateProfile();
+    const recruiterProfile = useRecruiterProfile();
     const [role, setRole] = useState("");
 
     const onSubmit = () => {
@@ -22,8 +24,10 @@ const EnterRole = () => {
             enterRole.onClose();
             createProfile.onOpen();
         }
-        else {
+        if(role==="Recruiter") {
             enterRole.onClose();
+            recruiterProfile.onOpen();
+            recruiter.onOpen();
         }
     }
     let bodyContent = (

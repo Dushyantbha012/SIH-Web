@@ -13,6 +13,7 @@ import { IoPersonAddSharp } from "react-icons/io5";
 import { MdOutlineComputer } from "react-icons/md";
 import { FaSitemap } from "react-icons/fa";
 import { GrCloudComputer } from "react-icons/gr";
+import axios from "axios";
 const jobTypes = [
     {
         label:"Internship",
@@ -39,7 +40,7 @@ const modedata=[
 ]
 interface listingProps {
     description: string;
-    responsibilites: string;
+    responsibilities: string;
     requirements: string;
     experience: string;
     location: string;
@@ -70,7 +71,7 @@ const ListJobModal = () => {
     } = useForm<listingProps>({
         defaultValues: {
             description: "",
-            responsibilites: "",
+            responsibilities: "",
             requirements: "",
             experience: "",
             location: "",
@@ -82,11 +83,6 @@ const ListJobModal = () => {
     const createJob = useCreateJob();
     const [isLoading,setIsLoading]=useState(false);
     const [step, setStep] = useState(STEPS.DESCRIPTION);
-    const [description, setDescription] = useState("");
-    const [responsibilites, setResponsibilites] = useState("");
-    const [requirements, setRequirements] = useState("");
-    const [experience, setExperience] = useState("");
-    const [location, setLocation] = useState("");
     const [jobType, setJobType] = useState("");
     const [mode, setMode] = useState("");
     const onBack = () => {
@@ -97,21 +93,48 @@ const ListJobModal = () => {
         setStep((value) => value + 1);
     };
 
-    const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         if (step !== STEPS.MODE) {
             return onNext();
         }
+        setIsLoading(true);
+    
+        // Collect all the form data, ensuring the state values for jobType and mode are included
         const jobData = {
-            description: description,
-            responsibilites: responsibilites,
-            requirements: requirements,
-            experience: experience,
-            location: location,
-            jobType: jobType,
-            mode: mode,
+            description: data.description,
+            responsibilities: data.responsibilities,
+            requirements: data.requirements,
+            experience: data.experience,
+            location: data.location,
+            jobType,  
+            mode,     
         };
-        console.log(jobData);
-        toast.success("Form submitted");
+    
+        // Check for missing fields
+        if (
+            !jobData.description ||
+            !jobData.responsibilities ||
+            !jobData.requirements ||
+            !jobData.experience ||
+            !jobData.location ||
+            !jobData.jobType ||
+            !jobData.mode
+        ) {
+            toast.error("Missing fields");
+            setIsLoading(false);
+            return;
+        }
+    
+        try {
+            const response = await axios.post("/api/addjob", jobData);  // Send the jobData directly
+            toast.success("New Job Posted !!");
+            createJob.onClose();
+        } catch (error) {
+            toast.error("Something Went Wrong !!");
+            console.error("Error while creating job:", error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const actionLabel = useMemo(() => {
@@ -149,11 +172,11 @@ const ListJobModal = () => {
         bodyContent = (
             <div className="flex flex-col gap-8">
             <Heading
-                title="Enter Responsibilites"
-                subtitle="Responsibilites expected"
+                title="Enter responsibilities"
+                subtitle="responsibilities expected"
             />
             <Input
-                id="responsibilites"
+                id="responsibilities"
                 label="Responsibilities"
                 disabled={isLoading}
                 register={register}
@@ -247,8 +270,8 @@ const ListJobModal = () => {
         bodyContent = (
             <div className="flex flex-col gap-8">
             <Heading
-                title="Enter Jobtype"
-                subtitle="Jobtype required"
+                title="Enter Mode"
+                subtitle="Mode required"
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
                     {modedata.map((item) => (
