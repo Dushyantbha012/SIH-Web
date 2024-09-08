@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       return new NextResponse("Missing fields", { status: 400 });
     }
 
-    
+    const organization = profile.organization;
     const jobListing = await db.joblisting.create({
       data: {
         recruiterId,
@@ -56,6 +56,7 @@ export async function POST(req: Request) {
         location,
         jobType,
         mode,
+        organization
       },
     });
     await db.recruiter.update({

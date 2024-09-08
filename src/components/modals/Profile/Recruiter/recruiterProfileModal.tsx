@@ -160,7 +160,7 @@ const RecruiterProfileModal = () => {
         bodyContent = (
             <div className="flex flex-col gap-8">
                 <Heading
-                    title="Company Name"
+                    title="About Company"
                     subtitle="Tell us about your company"
                 />
                 <Input

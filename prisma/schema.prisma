@@ -51,7 +51,7 @@ model Recruiter {
 
 model Joblisting {
   id               String    @id @default(auto()) @map("_id") @db.ObjectId
-  recruiterId      String    
+  recruiterId      String
   recruiter        Recruiter @relation(fields: [recruiterId], references: [id], name: "RecruiterJobListings")
   description      String
   responsibilities String
@@ -60,4 +60,5 @@ model Joblisting {
   location         String
   jobType          String // intern, full-time, etc.
   mode             String // remote, on-site, hybrid
+  organization     String // Add this field to store the organization type (gov/private)
 }

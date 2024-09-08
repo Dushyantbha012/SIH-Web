@@ -22,6 +22,7 @@ export default function Home() {
         click to add job
       </button>
       )}
+      
     </div>
     </>
   );
