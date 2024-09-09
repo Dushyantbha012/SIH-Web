@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
@@ -8,7 +7,6 @@ import ProfileModal from "@/components/modals/Profile/User/studentProfileModal";
 import ListJobModal from "@/components/modals/JobListing/listjobModal";
 import EnterRole from "@/components/modals/EnterRole/enterRole";
 import RecruiterProfileModal from "@/components/modals/Profile/Recruiter/recruiterProfileModal";
-const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "SIH Hiring",
   description: "An AI Powered platform which revolutionizes hiring",
@@ -22,12 +20,12 @@ export default async function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={inter.className}>
+        <body className="font-sans">
           <Header />
-          <ProfileModal/>
-          <ListJobModal/>
-          <EnterRole/>
-          <RecruiterProfileModal/>
+          <ProfileModal />
+          <ListJobModal />
+          <EnterRole />
+          <RecruiterProfileModal />
           {children}
           <Footer />
         </body>
