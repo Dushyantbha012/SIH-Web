@@ -49,16 +49,6 @@
 //     </div>
 //   );
 // }
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/Je7jhJ1p7i6
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/Je7jhJ1p7i6
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
 "use client";
 
 import { useState, useMemo, JSX, SVGProps, SetStateAction } from "react";

@@ -4,6 +4,14 @@ import { BriefcaseIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 export default function Header() {
   const router = useRouter();
   return (
@@ -25,9 +33,27 @@ export default function Header() {
           <Link href="#" className="font-medium hover:underline">
             About
           </Link>
-          <Link href="#" className="font-medium hover:underline">
-            Contact
-          </Link>
+          <div className="font-medium hover:underline">
+            <DropdownMenu>
+              <DropdownMenuTrigger>Jobs</DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => {
+                    router.push("/jobs/private");
+                  }}
+                >
+                  Private
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    router.push("/jobs/government");
+                  }}
+                >
+                  Government
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </nav>
         <div className="flex items-center gap-2 lg:ml-auto">
           <SignedOut>
