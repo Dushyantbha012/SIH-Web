@@ -24,7 +24,7 @@ export default function Header() {
           className="px-4 flex items-center gap-2 text-lg font-semibold"
         >
           <BriefcaseIcon className="h-6 w-6" />
-          <span>Talent Nexus</span>
+          <span>CareerBridge</span>
         </div>
         <nav className="hidden lg:flex gap-6">
           <Link href="#" className="font-medium hover:underline">
