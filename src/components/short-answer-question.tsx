@@ -27,13 +27,11 @@ export function ShortAnswerQuestion({ question }: ShortAnswerQuestionProps) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 to-blue-600">
-      <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-lg">
+      <Card className="w-full max-w-md bg-white bg-opacity-10 backdrop-blur-sm shadow-lg border-0 text-white">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold text-blue-800">
-            {question}
-          </CardTitle>
+          <CardTitle className="text-xl font-semibold ">{question}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="text-black">
           <Textarea
             placeholder="Type your answer here..."
             value={answer}
