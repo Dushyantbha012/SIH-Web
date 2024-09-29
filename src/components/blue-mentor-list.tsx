@@ -65,6 +65,83 @@ const mentors: Mentor[] = [
     yearsOfExperience: 6,
     avatar: "/placeholder.svg?height=100&width=100",
   },
+  {
+    "id": 6,
+    "name": "Arjun Patel",
+    "expertise": "Data Science",
+    "yearsOfExperience": 5,
+    "avatar": "/placeholder.svg?height=100&width=100"
+  },
+  {
+    "id": 7,
+    "name": "Sophia Zhang",
+    "expertise": "AI Ethics",
+    "yearsOfExperience": 4,
+    "avatar": "/placeholder.svg?height=100&width=100"
+  },
+  {
+    "id": 8,
+    "name": "Liam Johnson",
+    "expertise": "Natural Language Processing",
+    "yearsOfExperience": 7,
+    "avatar": "/placeholder.svg?height=100&width=100"
+  },
+  {
+    "id": 9,
+    "name": "Emily Williams",
+    "expertise": "Computer Vision",
+    "yearsOfExperience": 6,
+    "avatar": "/placeholder.svg?height=100&width=100"
+  },
+  {
+    "id": 10,
+    "name": "Ravi Sharma",
+    "expertise": "Deep Learning",
+    "yearsOfExperience": 8,
+    "avatar": "/placeholder.svg?height=100&width=100"
+  },
+  {
+    "id": 11,
+    "name": "Olivia Brown",
+    "expertise": "Robotics",
+    "yearsOfExperience": 5,
+    "avatar": "/placeholder.svg?height=100&width=100"
+  },
+  {
+    "id": 12,
+    "name": "Ethan Clark",
+    "expertise": "Reinforcement Learning",
+    "yearsOfExperience": 7,
+    "avatar": "/placeholder.svg?height=100&width=100"
+  },
+  {
+    "id": 13,
+    "name": "Priya Singh",
+    "expertise": "Big Data Analytics",
+    "yearsOfExperience": 9,
+    "avatar": "/placeholder.svg?height=100&width=100"
+  },
+  {
+    "id": 14,
+    "name": "Daniel Lee",
+    "expertise": "Autonomous Systems",
+    "yearsOfExperience": 6,
+    "avatar": "/placeholder.svg?height=100&width=100"
+  },
+  {
+    "id": 15,
+    "name": "Grace Kim",
+    "expertise": "Edge Computing",
+    "yearsOfExperience": 4,
+    "avatar": "/placeholder.svg?height=100&width=100"
+  },
+  {
+    "id": 16,
+    "name": "Michael Garcia",
+    "expertise": "Cloud AI",
+    "yearsOfExperience": 5,
+    "avatar": "/placeholder.svg?height=100&width=100"
+  }
 ];
 
 export function BlueMentorList() {
