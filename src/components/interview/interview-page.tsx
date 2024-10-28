@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mic, MicOff, SkipForward, Send, Play } from 'lucide-react';
 import axios from 'axios';
-
+import Typewriter from 'react-ts-typewriter';
 export default function InterviewClient() {
     const [isInterviewStarted, setIsInterviewStarted] = useState(false);
     const [currentQuestion, setCurrentQuestion] = useState("");
@@ -168,10 +168,12 @@ export default function InterviewClient() {
 
                     <Card>
                         <CardContent className="p-6">
-                            <h2 className="text-xl font-semibold mb-4">{currentQuestion}</h2>
+                            <h2 className="text-xl font-semibold mb-4">
+                                <Typewriter text={currentQuestion} />
+                            </h2>
                             {transcription && (
                                 <div className="bg-gray-100 p-4 rounded-md mb-4">
-                                    <p className="text-sm text-gray-700">{transcription}</p>
+                                    <p className="text-sm text-gray-700"><Typewriter text={transcription} /></p>
                                 </div>
                             )}
                             <div className="flex justify-between items-center space-x-10">
