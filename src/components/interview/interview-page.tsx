@@ -1,141 +1,154 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Card, CardContent } from "@/components/ui/card"
-import { Mic, MicOff, SkipForward, Send, Play } from 'lucide-react'
-
-const generateQuestion = () => {
-    const questions = [
-        "Tell me about yourself.",
-        "What are your greatest strengths?",
-        "Where do you see yourself in 5 years?",
-        "Why should we hire you?",
-        "Describe a challenging work situation and how you overcame it."
-    ]
-    return questions[Math.floor(Math.random() * questions.length)]
-}
+import { useState, useEffect, useRef } from 'react';
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Card, CardContent } from "@/components/ui/card";
+import { Mic, MicOff, SkipForward, Send, Play } from 'lucide-react';
+import axios from 'axios';
 
 export default function InterviewClient() {
-    const [isInterviewStarted, setIsInterviewStarted] = useState(false)
-    const [currentQuestion, setCurrentQuestion] = useState("")
-    const [isRecording, setIsRecording] = useState(false)
-    const [transcription, setTranscription] = useState("")
-    const [progress, setProgress] = useState(0)
-    const [feedback, setFeedback] = useState("")
-
-    const totalQuestions = 5
-    const answeredQuestions = useRef(0)
-    const recognitionRef = useRef<SpeechRecognition | null>(null)
+    const [isInterviewStarted, setIsInterviewStarted] = useState(false);
+    const [currentQuestion, setCurrentQuestion] = useState("");
+    const [isRecording, setIsRecording] = useState(false);
+    const [transcription, setTranscription] = useState("");
+    const [progress, setProgress] = useState(0);
+    const [feedback, setFeedback] = useState("");
+    const [questions, setQuestions] = useState<string[]>([]);
+    const totalQuestions = 5; // Adjust this if the total number of questions changes
+    const answeredQuestions = useRef(0);
+    const recognitionRef = useRef<SpeechRecognition | null>(null);
 
     useEffect(() => {
-        if (isInterviewStarted && currentQuestion === "") {
-            setCurrentQuestion(generateQuestion())
+        if (isInterviewStarted) {
+            fetchQuestions(); // Fetch questions when the interview starts
         }
-    }, [isInterviewStarted, currentQuestion])
+    }, [isInterviewStarted]);
+
+    const fetchQuestions = async () => {
+        try {
+            const response = await axios.get('/api/interview/questions');
+            const data = await response.data;
+            console.log(data);
+            const refinedQuestions = data.questions.filter((question: string) =>
+                question.trim() !== '' && !question.startsWith('Here are')
+            );
+            console.log(refinedQuestions)
+            setQuestions(refinedQuestions); // Update state with fetched questions
+            setCurrentQuestion(refinedQuestions[answeredQuestions.current]); // Set the first question
+        } catch (error) {
+            console.error('Error fetching questions:', error);
+        }
+    };
 
     const startInterview = () => {
-        setIsInterviewStarted(true)
-        answeredQuestions.current = 0
-        setProgress(0)
-        setFeedback("")
-    }
+        setIsInterviewStarted(true);
+        answeredQuestions.current = 0;
+        setProgress(0);
+        setFeedback("");
+    };
 
     const startRecording = () => {
         if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-            console.error("SpeechRecognition API not supported in this browser.")
-            alert("SpeechRecognition API is not supported in this browser. Please use Google Chrome for the best experience.")
-            return
+            console.error("SpeechRecognition API not supported in this browser.");
+            alert("SpeechRecognition API is not supported in this browser. Please use Google Chrome for the best experience.");
+            return;
         }
 
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-        const recognition = new SpeechRecognition()
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
 
-        recognition.continuous = false
-        recognition.interimResults = true
-        recognition.lang = 'en-US'
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
 
         recognition.onstart = () => {
-            setIsRecording(true)
-        }
+            setIsRecording(true);
+        };
 
         recognition.onresult = (event) => {
             const transcript = Array.from(event.results)
                 .map(result => result[0].transcript)
-                .join('')
-            setTranscription(transcript)
-        }
+                .join('');
+            setTranscription(transcript);
+        };
 
         recognition.onerror = (event) => {
-            console.error("Speech recognition error:", event.error)
+            console.error("Speech recognition error:", event.error);
             switch (event.error) {
                 case 'network':
-                    alert("Network error occurred. Please check your internet connection and try again.")
-                    break
+                    alert("Network error occurred. Please check your internet connection and try again.");
+                    break;
                 case 'no-speech':
-                    alert("No speech was detected. Please try again.")
-                    break
+                    alert("No speech was detected. Please try again.");
+                    break;
                 case 'aborted':
-                    alert("Speech recognition was aborted. Please try again.")
-                    break
+                    alert("Speech recognition was aborted. Please try again.");
+                    break;
                 case 'audio-capture':
-                    alert("No microphone was found. Ensure that a microphone is installed and that microphone settings are configured correctly.")
-                    break
+                    alert("No microphone was found. Ensure that a microphone is installed and that microphone settings are configured correctly.");
+                    break;
                 case 'not-allowed':
                 case 'service-not-allowed':
-                    alert("Permission to use the microphone is denied. Please allow microphone access and try again.")
-                    break
+                    alert("Permission to use the microphone is denied. Please allow microphone access and try again.");
+                    break;
                 case 'bad-grammar':
-                    alert("There was an error in the speech recognition grammar.")
-                    break
+                    alert("There was an error in the speech recognition grammar.");
+                    break;
                 case 'language-not-supported':
-                    alert("The specified language is not supported.")
-                    break
+                    alert("The specified language is not supported.");
+                    break;
                 default:
-                    alert("An unknown error occurred. Please try again.")
-                    break
+                    alert("An unknown error occurred. Please try again.");
+                    break;
             }
-        }
+        };
 
         recognition.onend = () => {
-            setIsRecording(false)
-        }
+            setIsRecording(false);
+        };
 
-        recognitionRef.current = recognition
-        recognition.start()
-    }
+        recognitionRef.current = recognition;
+        recognition.start();
+    };
 
     const stopRecording = () => {
         if (recognitionRef.current) {
-            recognitionRef.current.stop()
-            console.log("Transcription:", transcription)
+            recognitionRef.current.stop();
+            console.log("Transcription:", transcription);
         }
-    }
+    };
 
     const submitAnswer = () => {
-        answeredQuestions.current += 1
-        setProgress((answeredQuestions.current / totalQuestions) * 100)
+        answeredQuestions.current += 1;
+        setProgress((answeredQuestions.current / totalQuestions) * 100);
 
-        if (answeredQuestions.current < totalQuestions) {
-            setCurrentQuestion(generateQuestion())
-            setTranscription("")
+        if (answeredQuestions.current < questions.length) {
+            setCurrentQuestion(questions[answeredQuestions.current]); // Set the next question
+            setTranscription("");
         } else {
-            endInterview()
+            endInterview();
         }
-    }
+    };
 
     const skipQuestion = () => {
-        setCurrentQuestion(generateQuestion())
-        setTranscription("")
-    }
+        answeredQuestions.current += 1; // Increment the counter to move to the next question
+        setProgress((answeredQuestions.current / totalQuestions) * 100);
+
+        if (answeredQuestions.current < questions.length) {
+            setCurrentQuestion(questions[answeredQuestions.current]); // Skip to the next question
+            setTranscription("");
+        } else {
+            endInterview();
+        }
+    };
 
     const endInterview = () => {
-        setIsInterviewStarted(false)
-        setCurrentQuestion("")
-        setTranscription("")
-        setFeedback("Great job! You demonstrated strong communication skills and provided relevant examples. Consider elaborating more on your technical skills in future interviews.")
-    }
+        setIsInterviewStarted(false);
+        setCurrentQuestion("");
+        setTranscription("");
+        setFeedback("Great job! You demonstrated strong communication skills and provided relevant examples. Consider elaborating more on your technical skills in future interviews.");
+    };
 
     return (
         <div className="max-w-2xl mx-auto space-y-6">
@@ -200,5 +213,5 @@ export default function InterviewClient() {
                 </>
             )}
         </div>
-    )
+    );
 }
