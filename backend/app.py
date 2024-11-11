@@ -1,13 +1,15 @@
 from flask import Flask, request, jsonify
 import PyPDF2
-import requests
 from groq import Groq
 import os
-
+from controllers.verifyUrl import is_valid_url 
+from utils.download_pdf import download_pdf
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from utils.secure_api_call import exponential_backoff_request
 app = Flask(__name__)
-
+limiter = Limiter(get_remote_address, app=app, default_limits=["200 per day", "50 per hour"])
 class InterviewAssistant:
     def __init__(self, api_key, pdf_path=None):
         self.api_key = api_key
@@ -29,56 +31,58 @@ class InterviewAssistant:
     def generate_questions(self):
         prompt = f"Generate 5-10 concise and formal technical questions based on the following resume: {self.resume}"
         
-        chat_completion = self.client.chat.completions.create(
-            messages=[
-                {"role": "system", "content": "You are an interviewer who asks only formal and concise questions."},
-                {"role": "user", "content": prompt}
-            ],
-            model="llama3-8b-8192",
-            max_tokens=150
-        )
-        
+        def api_call():
+            return self.client.chat.completions.create(
+                messages=[
+                    {"role": "system", "content": "You are an interviewer who asks only formal and concise questions."},
+                    {"role": "user", "content": prompt}
+                ],
+                model="llama3-8b-8192",
+                max_tokens=150
+            )
+
+        chat_completion = exponential_backoff_request(api_call) 
         return chat_completion.choices[0].message.content.strip().split('\n')
 
     def analyze_response(self, question, transcript):
         prompt = f"Based on the question: '{question}', evaluate the response: '{transcript}' and provide constructive feedback."
         
-        chat_completion = self.client.chat.completions.create(
-            messages=[
-                {"role": "system", "content": "You are an evaluator who gives constructive feedback on interview responses."},
-                {"role": "user", "content": prompt}
-            ],
-            model="llama3-8b-8192",
-            max_tokens=150
-        )
-        
+        def api_call():
+            return self.client.chat.completions.create(
+                messages=[
+                    {"role": "system", "content": "You are an evaluator who gives constructive feedback on interview responses."},
+                    {"role": "user", "content": prompt}
+                ],
+                model="llama3-8b-8192",
+                max_tokens=150
+            )
+
+        chat_completion = exponential_backoff_request(api_call) 
         return chat_completion.choices[0].message.content.strip()
 
-def download_pdf(url, save_path):
-    response = requests.get(url)
-    with open(save_path, 'wb') as f:
-        f.write(response.content)
-
 @app.route('/ask_questions', methods=['POST'])
+@limiter.limit("10 per minute")
 def ask_questions():
     data = request.json
     pdf_url = data.get('pdf_url')
-    
-    if not pdf_url:
-        return jsonify({"error": "PDF URL is required"}), 400
 
+    if not pdf_url or not is_valid_url(pdf_url):
+        return jsonify({"error": "Invalid or missing PDF URL"}), 400
     # Save PDF from the URL
     pdf_path = 'temp_resume.pdf'
-    download_pdf(pdf_url, pdf_path)
+    try:
+        download_result = download_pdf(pdf_url, pdf_path)
+        if "error" in download_result:
+            return jsonify(download_result), 400
 
-    api_key = "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" 
-    assistant = InterviewAssistant(api_key, pdf_path)
+        api_key = "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" 
+        assistant = InterviewAssistant(api_key, pdf_path)
     
-    questions = assistant.generate_questions()
-    
-    os.remove(pdf_path)
-
-    return jsonify({"questions": questions})
+        questions = assistant.generate_questions()
+        return jsonify({"questions": questions})
+    finally:
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
 
 @app.route('/analyze_responses', methods=['POST'])
 def analyze_responses():
@@ -91,7 +95,7 @@ def analyze_responses():
     api_key = "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" 
     assistant = InterviewAssistant(api_key, pdf_path=None)
 
-    analysis_results = []  # To store the feedback for each question-response pair
+    analysis_results = []  
 
     for item in responses:
         question = item.get('question')
