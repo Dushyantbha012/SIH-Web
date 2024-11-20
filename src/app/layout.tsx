@@ -24,7 +24,7 @@ export default async function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className="font-sans">
-          
+
           <Header />
           <ProfileModal />
           <ListJobModal />
@@ -32,9 +32,9 @@ export default async function RootLayout({
           <RecruiterProfileModal />
           <ResumeBuildModal />
           <ResumeAnalyse />
-      <LoadingProvider>
-          {children}
-      </LoadingProvider>
+          <LoadingProvider>
+            {children}
+          </LoadingProvider>
           <Footer />
         </body>
       </html>
