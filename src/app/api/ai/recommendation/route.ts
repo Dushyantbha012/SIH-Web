@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { RedisManager } from "@/lib/redis/RedisManager";
+import { GET_RECOMMENDATION } from "@/lib/redis/types";
 import axios from "axios";
 
 export async function POST(request: Request) {
@@ -12,11 +14,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const res = await axios.post("http://127.0.0.1:5000/recommendation", {
-      job_description: job_description,
-      pdf_url: resume,
-    });
-    return NextResponse.json(res.data);
+    const res = await RedisManager.getInstance().sendAndAwait({
+      type: GET_RECOMMENDATION,
+      data: { job_description, resume },
+    })
+    return NextResponse.json(res.payload);
     // const userData = await currentUserData();
     // if (userData && userData[0] && userData[0].resume) {
     //   const res = await axios.post("http://127.0.0.1:5000/recommendation", {
