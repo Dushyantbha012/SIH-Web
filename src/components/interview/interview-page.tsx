@@ -10,7 +10,7 @@ import axios from 'axios'
 import Typewriter from 'react-ts-typewriter'
 import FeedbackComponent from './feedback-component'
 import QuestionReader from './screen-reader'
-import VoiceAnimation from './voice-animation'
+import VoiceAnimation from '../cultural-fit/voice-animation'
 import useLoading from '@/hooks/useLoading'
 
 interface AnalysisResult {

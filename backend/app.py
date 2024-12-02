@@ -1,13 +1,16 @@
 from flask import Flask, request, jsonify
 import PyPDF2
 from groq import Groq
-import os
 from controllers.verifyUrl import is_valid_url 
 from utils.download_pdf import download_pdf
+import os
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from utils.secure_api_call import exponential_backoff_request
+from similarity_score import pdf_to_text, calculate_similarity_score
+from resume_builder import resume_builder
+from recommendation import generate_recommendation
 app = Flask(__name__)
 limiter = Limiter(get_remote_address, app=app, default_limits=["200 per day", "50 per hour"])
 class InterviewAssistant:
@@ -68,7 +71,7 @@ def ask_questions():
 
     if not pdf_url or not is_valid_url(pdf_url):
         return jsonify({"error": "Invalid or missing PDF URL"}), 400
-    # Save PDF from the URL
+    
     pdf_path = 'temp_resume.pdf'
     try:
         download_result = download_pdf(pdf_url, pdf_path)
@@ -87,7 +90,7 @@ def ask_questions():
 @app.route('/analyze_responses', methods=['POST'])
 def analyze_responses():
     data = request.json
-    responses = data.get('responses')  # Access the array of responses
+    responses = data.get('responses')  
 
     if not responses:
         return jsonify({"error": "Responses data is required"}), 400
@@ -115,6 +118,56 @@ def analyze_responses():
 
     return jsonify({"analysis_results": analysis_results})
 
+@app.route('/similarity-score', methods=['POST'])
+def similarity_score():
+    data = request.json
+    pdf_url = data.get('pdf_url')
+    job_description = data.get('job_description')
+    if not pdf_url:
+        return jsonify({'error': 'PDF URL is required'}), 400
+    pdf_path = 'downloaded_resume.pdf'
+    
+    if not download_pdf(pdf_url, pdf_path):
+        return jsonify({'error': 'Failed to download PDF'}), 500
+    resume_text = pdf_to_text(pdf_path)
+    scores = calculate_similarity_score(resume_text,job_description)
+
+    os.remove(pdf_path)
+
+    return jsonify(scores)
+
+@app.route('/resume-build', methods=['POST'])
+def build_resume():
+    data = request.json
+    resume_url = data.get('resume_url')
+    job_description = data.get('job_description')
+    pdf_path = 'downloaded_resume.pdf'
+    
+    if not download_pdf(resume_url, pdf_path):
+        return jsonify({'error': 'Failed to download PDF'}), 500
+    resume_text = pdf_to_text(pdf_path)
+    if not resume_text or not job_description:
+        return jsonify({'error': 'Both resume text and job description are required.'}), 400
+
+    generated_resume = resume_builder(resume_text, job_description)
+    return jsonify({'generated_resume': generated_resume})
+
+@app.route('/recommendation', methods=['POST'])
+def recommendation():
+    data = request.json
+    resume_url = data.get('resume_url')
+    job_description = data.get('job_description')
+    pdf_path = 'downloaded_resume.pdf'
+    if not resume_url or not job_description:
+        return jsonify({'error': 'Both resume URL and job description are required.'}), 400
+    if not download_pdf(resume_url, pdf_path):
+        return jsonify({'error': 'Failed to download PDF'}), 500
+    resume_text = pdf_to_text(pdf_path)
+    try:
+        response = generate_recommendation(resume_text, job_description)
+        return jsonify({'response': response})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
