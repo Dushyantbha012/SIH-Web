@@ -9,6 +9,7 @@ import EnterRole from "@/components/modals/EnterRole/enterRole";
 import RecruiterProfileModal from "@/components/modals/Profile/Recruiter/recruiterProfileModal";
 import ResumeBuildModal from "@/components/modals/ResumeBuild/resumeBuild";
 import ResumeAnalyse from "@/components/modals/ResumeAnalyse/resumeAnalyse";
+import LoadingProvider from "@/providers/loadingProvider";
 export const metadata: Metadata = {
   title: "SIH Hiring",
   description: "An AI Powered platform which revolutionizes hiring",
@@ -23,6 +24,7 @@ export default async function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className="font-sans">
+
           <Header />
           <ProfileModal />
           <ListJobModal />
@@ -30,7 +32,9 @@ export default async function RootLayout({
           <RecruiterProfileModal />
           <ResumeBuildModal />
           <ResumeAnalyse />
-          {children}
+          <LoadingProvider>
+            {children}
+          </LoadingProvider>
           <Footer />
         </body>
       </html>
