@@ -7,11 +7,22 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Card, CardContent } from "@/components/ui/card"
-import { Mic, MicOff,Send, Play  } from 'lucide-react'
+import { Mic, MicOff, Send, Play } from 'lucide-react'
 import Typewriter from 'react-ts-typewriter'
 import useLoading from "@/hooks/useLoading";
 import VoiceAnimation from "./voice-animation";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
+
+interface Emotion {
+    name: string;
+    value: number;
+}
+
+interface AnalysisResult {
+    emotions: Emotion[][];
+    result: string;
+}
 
 const CulturalFitClient = () => {
     const [isRecording, setIsRecording] = useState(false);
@@ -23,8 +34,11 @@ const CulturalFitClient = () => {
     const [isInterviewStarted, setIsInterviewStarted] = useState(false)
     const [progress, setProgress] = useState(0)
     const loading = useLoading();
+    const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+
     const startRecording = () => {
         setIsInterviewStarted(true)
+        setAudioFile(null)
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices
                 .getUserMedia({ audio: true })
@@ -44,6 +58,7 @@ const CulturalFitClient = () => {
                         const audioFile = new File([audioBlob], "audio.wav", {
                             type: "audio/wav",
                         });
+
                         setAudioFile(audioFile);
                         console.log("Recording finished, file URL:", URL.createObjectURL(audioBlob));
                     };
@@ -59,12 +74,10 @@ const CulturalFitClient = () => {
         }
     };
 
-    // Stop the recording
     const stopRecording = () => {
         if (audioRef.current && isRecording) {
             audioRef.current.stop();
             setIsRecording(false);
-
         }
         console.log("Recording stopped", audioFile)
     };
@@ -72,22 +85,65 @@ const CulturalFitClient = () => {
     const uploadAudio = async (file: File) => {
         try {
             const response = await startUpload([file]);
-            
+
             console.log("Upload successful:", response);
 
             if (response && response.length > 0) {
                 const fileUrl = response[0].url;
                 console.log("Upload successful:", fileUrl);
                 setAudioUrl(fileUrl);
+                await analyzeAudio(fileUrl);
             }
+
         } catch (error) {
             console.error("Upload failed:", error);
         }
     };
 
+    const analyzeAudio = async (audioUrl: string) => {
+        try {
+            const response = await fetch('/api/cultural-fit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ audioUrl }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to analyze audio');
+            }
+
+            const result: AnalysisResult = await response.json();
+            setAnalysisResult(result);
+        } catch (error) {
+            console.error('Error analyzing audio:', error);
+        }
+    };
+
+    const renderEmotionCharts = () => {
+        if (!analysisResult) return null;
+
+        return analysisResult.emotions.map((emotionSet, index) => (
+            <div key={index} className="mb-8">
+                <h3 className="text-lg font-semibold mb-2">Emotion Set {index + 1}</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={emotionSet}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="value" fill="#8884d8" />
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
+        ));
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center">
-            <Card className="w-full max-w-2xl shadow-xl">
+            <Card className="w-full max-w-4xl shadow-xl">
                 <CardContent className="p-6">
                     <AnimatePresence mode="wait">
                         {!isInterviewStarted && !loading.isOpen ? (
@@ -117,8 +173,8 @@ const CulturalFitClient = () => {
                                 <h2 className="text-xl font-semibold mb-4 text-gray-800">
                                     <Typewriter text={"Tell me about yourself"} />
                                 </h2>
-                                
-                                <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4">
+
+                                <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
                                     <div className="flex items-center space-x-4">
                                         <Button
                                             onClick={isRecording ? stopRecording : startRecording}
@@ -138,6 +194,22 @@ const CulturalFitClient = () => {
                                         </div>
                                     }
                                 </div>
+
+                                {analysisResult && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5 }}
+                                        className="mt-8"
+                                    >
+                                        <h2 className="text-2xl font-bold mb-4">Analysis Results</h2>
+                                        {renderEmotionCharts()}
+                                        <div className="mt-8">
+                                            <h3 className="text-xl font-semibold mb-2">Summary</h3>
+                                            <p className="text-gray-700 whitespace-pre-line">{analysisResult.result}</p>
+                                        </div>
+                                    </motion.div>
+                                )}
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -148,3 +220,4 @@ const CulturalFitClient = () => {
 };
 
 export default CulturalFitClient;
+
