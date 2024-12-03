@@ -12,8 +12,9 @@ import useResumeBuild from "@/hooks/useResumeBuild";
 import Heading from "../ModalInputs/Heading";
 import Input from "./Input";
 import Modal from "../modal";
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
 import { is } from "date-fns/locale";
+import axios from "axios";
 const markdownContent = `
 **Arnav Bansal**
 **AI Engineer & Data Science Enthusiast**
@@ -130,7 +131,7 @@ const ResumeBuildModal = () => {
       contact: "",
       education: "",
       experience: "",
-      skills: ""
+      skills: "",
     },
   });
 
@@ -164,12 +165,18 @@ const ResumeBuildModal = () => {
       contact: contact,
       education: education,
       experience: experience,
-      skills: skills
+      skills: skills,
     };
     setIsMarkdownView(true);
-    console.log(profileData);
+    const res = await axios.post("/api/ai/resume_build", {
+      fullName,
+      email,
+      contact,
+      education,
+      experience,
+      skills,
+    });
     setIsLoading(false);
-
   };
 
   const actionLabel = useMemo(() => {
@@ -225,7 +232,6 @@ const ResumeBuildModal = () => {
           errors={errors}
           required
         />
-
       </div>
     );
   }
@@ -251,10 +257,7 @@ const ResumeBuildModal = () => {
   if (step === STEPS.EMAIL) {
     bodyContent = (
       <div className="flex flex-col gap-8">
-        <Heading
-          title="Enter your email"
-          subtitle="Your email address"
-        />
+        <Heading title="Enter your email" subtitle="Your email address" />
         <Input
           id="email"
           label="Email"
@@ -287,10 +290,7 @@ const ResumeBuildModal = () => {
   if (step === STEPS.SKILLS) {
     bodyContent = (
       <div className="flex flex-col gap-8">
-        <Heading
-          title="Enter your skills"
-          subtitle="Your expertise"
-        />
+        <Heading title="Enter your skills" subtitle="Your expertise" />
         <Input
           id="skills"
           label="Skills"
@@ -310,8 +310,6 @@ const ResumeBuildModal = () => {
       </div>
     );
   }
-
-
 
   return (
     <Modal

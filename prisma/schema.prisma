@@ -61,4 +61,7 @@ model Joblisting {
   jobType          String // intern, full-time, etc.
   mode             String // remote, on-site, hybrid
   organization     String // Add this field to store the organization type (gov/private)
+  title String
+  salary String
+  createdAt        DateTime  @default(now())
 }
