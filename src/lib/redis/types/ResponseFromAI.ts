@@ -25,4 +25,9 @@ export type ResponseFromAi = {
     type:"QUESTIONS", payload: {
         questions: string[]
     }
+} |{
+    type:"CULTURE_FIT", payload: {
+        'result': string,
+        'emotions': any
+    }
 }

@@ -1,23 +1,20 @@
+import { RedisManager } from '@/lib/redis/RedisManager';
+import { GET_CULTURAL_FIT } from '@/lib/redis/types';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
     try {
+        console.log('POST /api/cultural-fit');
         const { audioUrl } = await req.json();
 
-        const response = await fetch('http://127.0.0.1:5000/cultural-fit', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
+        const res = await RedisManager.getInstance().sendAndAwait({
+            type: GET_CULTURAL_FIT,
+            data: {
+                audio_url: audioUrl,
             },
-            body: JSON.stringify({ audioUrl }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to analyze audio');
-        }
-
-        const data = await response.json();
-        return NextResponse.json(data);
+          })
+      
+          return NextResponse.json(res.payload);
     } catch (error) {
         console.error('Error in cultural-fit API route:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
