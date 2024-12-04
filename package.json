@@ -45,6 +45,7 @@
     "next": "^14.2.12",
     "next-cloudinary": "^6.10.1",
     "react": "^18.3.1",
+    "react-apexcharts": "^1.6.0",
     "react-chartjs-2": "^5.2.0",
     "react-date-range": "^2.0.1",
     "react-day-picker": "^8.10.1",
@@ -59,7 +60,7 @@
     "speech-recognition": "^0.0.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "uploadthing": "^6.13.2",
+    "uploadthing": "^6.13.3",
     "vaul": "^0.9.1",
     "zod": "^3.23.8",
     "zustand": "^4.5.5"

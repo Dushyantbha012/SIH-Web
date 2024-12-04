@@ -11,9 +11,9 @@ import { Mic, MicOff, Send, Play } from 'lucide-react'
 import Typewriter from 'react-ts-typewriter'
 import useLoading from "@/hooks/useLoading";
 import VoiceAnimation from "./voice-animation";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { CulturalFitAnalysis } from "./cultural-fit-display";
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
-
+const exampleResponse = { "emotions": [["Interest: 0.4721828103065491", "Amusement: 0.43491387367248535", "Surprise (positive): 0.28914597630500793"], ["Concentration: 0.6366159319877625", "Interest: 0.5614610910415649", "Determination: 0.4061761498451233"], ["Satisfaction: 0.22752264142036438", "Contentment: 0.17091824114322662", "Pride: 0.16791008412837982"], ["Realization: 0.26484888792037964", "Sadness: 0.1887257695198059", "Disappointment: 0.1877591609954834"], ["Determination: 0.40023890137672424", "Interest: 0.320429265499115", "Satisfaction: 0.22500911355018616"], ["Interest: 0.7706456184387207", "Determination: 0.41761326789855957", "Excitement: 0.4144953191280365"]], "result": "Summary and Feedback:\n\nYour response includes a mix of statements about yourself, your interests, and your proficiencies. However, it appears that your response is fragmented and lacks cohesion. \n\nSome notable aspects of your response include:\n\n- You started with a friendly tone, introducing yourself with enthusiasm (segment 0).\n- You showed interest in your profession and mentioned your proficiency in building web applications using Flask and Python (segments 1 and 3).\n- You also mentioned your interest in implementing AI with a tool called Monster Truck (segment 2), but this seems to be an unusual and unclear statement.\n- Your response had a brief mention of your passion for other activities, such as badminton and other non-coding related hobbies (segment 5).\n- Your emotions fluctuated throughout the response, showcasing enthusiasm, determination, and interest in various tasks.\n\nTips for Improvement:\n\n1. Structure your response: Start with a clear and concise introduction, followed by your professional experience, skills, and interests. \n2. Be clear about your skills and experiences: While you mentioned your proficiency in using Flask and Python, it would be helpful to provide more specific examples or projects related to these skills. \n3. Be prepared for unusual questions: It is possible that you will be asked questions that you are not fully prepared for. A good strategy is to think on your feet and briefly describe your approach or experience related to the topic.\n4. Show consistency in tone and emotions: Although your response had some positive emotions, it was also marked by some negative emotions (e.g., sadness in segment 3). Take a moment to compose yourself before responding.\n\nOverall Score: 6/10\n\nYou showed enthusiasm and a willingness to engage in the conversation, but your response lacked cohesion and clarity. Focus on structuring your response, providing clear examples of your skills, and maintaining a consistent tone, and you will see significant improvement.\n\n---\n\nInterviewer Response:\n\nNice to meet you, Arnav! I'm here today to get to know you better. Let's start by talking about your experience with web development. What's your background in building web applications, and what tools or technologies do you find particularly exciting to work with?\n\nPlease respond as if you were Arnav, and I will provide feedback on your response." }
 interface Emotion {
     name: string;
     value: number;
@@ -35,7 +35,7 @@ const CulturalFitClient = () => {
     const [progress, setProgress] = useState(0)
     const loading = useLoading();
     const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-
+    const [error, setError] = useState<string | null>(null);
     const startRecording = () => {
         setIsInterviewStarted(true)
         setAudioFile(null)
@@ -68,9 +68,11 @@ const CulturalFitClient = () => {
                 })
                 .catch((error) => {
                     console.error("Error accessing microphone:", error);
+                    setError("Error accessing microphone. Please check your permissions and try again.");
                 });
         } else {
             console.error("Your browser does not support audio recording.");
+            setError("Your browser does not support audio recording. Please try using a different browser.");
         }
     };
 
@@ -84,6 +86,15 @@ const CulturalFitClient = () => {
 
     const uploadAudio = async (file: File) => {
         try {
+            loading.onOpen();
+            const interval = setInterval(() => {
+                setProgress((prevProgress) => {
+                    if (prevProgress < 95) {
+                        return prevProgress + 5; // Increment by 5 until 95%
+                    }
+                    return prevProgress;
+                });
+            }, 2000);
             const response = await startUpload([file]);
 
             console.log("Upload successful:", response);
@@ -94,9 +105,12 @@ const CulturalFitClient = () => {
                 setAudioUrl(fileUrl);
                 await analyzeAudio(fileUrl);
             }
-
+            clearInterval(interval);
+            setProgress(100);
+            loading.onClose();
         } catch (error) {
             console.error("Upload failed:", error);
+            setError("Failed to upload audio. Please try again.");
         }
     };
 
@@ -114,31 +128,55 @@ const CulturalFitClient = () => {
                 throw new Error('Failed to analyze audio');
             }
 
-            const result: AnalysisResult = await response.json();
-            setAnalysisResult(result);
+            const result = await response.json();
+
+            // Process the result to match the new data structure
+            const processedResult: AnalysisResult = {
+                emotions: result.emotions.map((segment: string[]) => {
+                    return segment.map((emotion: string) => {
+                        const [name, valueStr] = emotion.split(': ');
+                        return {
+                            name,
+                            value: parseFloat(valueStr)
+                        };
+                    });
+                }),
+                result: result.result
+            };
+            console.log('Original analysis result:', result);
+            console.log(
+                'Processed analysis result:',
+                processedResult
+            )
+            setAnalysisResult(processedResult);
+            setError(null); // Clear any previous errors
         } catch (error) {
             console.error('Error analyzing audio:', error);
+            setError('An error occurred while analyzing the audio. Please try again.');
         }
+        // const result = exampleResponse;
+        // const processedResult: AnalysisResult = {
+        //         emotions: result.emotions.map((segment: string[]) => {
+        //             return segment.map((emotion: string) => {
+        //                 const [name, valueStr] = emotion.split(': ');
+        //                 return {
+        //                     name,
+        //                     value: parseFloat(valueStr)
+        //                 };
+        //             });
+        //         }),
+        //         result: result.result
+        //     };
+        //     console.log('Original analysis result:', result);
+        //     console.log(
+        //         'Processed analysis result:',
+        //         processedResult
+        //     )
+        //     setAnalysisResult(processedResult);
     };
 
-    const renderEmotionCharts = () => {
-        if (!analysisResult) return null;
-
-        return analysisResult.emotions.map((emotionSet, index) => (
-            <div key={index} className="mb-8">
-                <h3 className="text-lg font-semibold mb-2">Emotion Set {index + 1}</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={emotionSet}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="value" fill="#8884d8" />
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
-        ));
+    const formatResult = (result: string) => {
+        return result.replace(/\n/g, '<br>').replace(/\*\*/g, '');
     };
 
     return (
@@ -158,7 +196,7 @@ const CulturalFitClient = () => {
                                 <h2 className="text-3xl font-bold mb-4 text-gray-800">Ready for Your Cultural Fit Analysis?</h2>
                                 <p className="mb-6 text-gray-600">Click the button below to begin. You'll be presented with a series of questions to answer.</p>
                                 <Button onClick={startRecording} className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                                    <Play className="mr-2 h-5 w-5" /> Start Interview
+                                    <Play className="mr-2 h-5 w-5" /> Get Started
                                 </Button>
                             </motion.div>
                         ) : (
@@ -195,6 +233,16 @@ const CulturalFitClient = () => {
                                     }
                                 </div>
 
+                                {error && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5 }}
+                                        className="mt-4 p-4 bg-red-100 text-red-700 rounded-md"
+                                    >
+                                        {error}
+                                    </motion.div>
+                                )}
                                 {analysisResult && (
                                     <motion.div
                                         initial={{ opacity: 0, y: 20 }}
@@ -203,10 +251,13 @@ const CulturalFitClient = () => {
                                         className="mt-8"
                                     >
                                         <h2 className="text-2xl font-bold mb-4">Analysis Results</h2>
-                                        {renderEmotionCharts()}
+                                        <CulturalFitAnalysis emotions={analysisResult.emotions} />
                                         <div className="mt-8">
                                             <h3 className="text-xl font-semibold mb-2">Summary</h3>
-                                            <p className="text-gray-700 whitespace-pre-line">{analysisResult.result}</p>
+                                            <p
+                                                className="text-gray-700 leading-relaxed"
+                                                dangerouslySetInnerHTML={{ __html: formatResult(analysisResult.result) }}
+                                            />
                                         </div>
                                     </motion.div>
                                 )}
@@ -220,4 +271,3 @@ const CulturalFitClient = () => {
 };
 
 export default CulturalFitClient;
-

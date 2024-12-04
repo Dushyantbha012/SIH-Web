@@ -11,7 +11,7 @@ import ResumeBuildModal from "@/components/modals/ResumeBuild/resumeBuild";
 import ResumeAnalyse from "@/components/modals/ResumeAnalyse/resumeAnalyse";
 import LoadingProvider from "@/providers/loadingProvider";
 export const metadata: Metadata = {
-  title: "SIH Hiring",
+  title: "CareerBridge",
   description: "An AI Powered platform which revolutionizes hiring",
 };
 
