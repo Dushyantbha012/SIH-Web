@@ -145,6 +145,7 @@ const ResumeBuildModal = () => {
   const [experience, setExperience] = useState<string>("");
   const [skills, setSkills] = useState<string>("");
   const [isMarkdownView, setIsMarkdownView] = useState(false);
+  const job_description = "AI Engineer & Data Science Enthusiast";
   const onBack = () => {
     setStep((value) => value - 1);
   };
@@ -175,6 +176,7 @@ const ResumeBuildModal = () => {
       education,
       experience,
       skills,
+      job_description,
     });
     setIsLoading(false);
   };

@@ -22,6 +22,7 @@ export async function POST(request: Request) {
         type: GET_RECOMMENDATION,
         data: { job_description, resume:userData[0].resume },
       })
+      console.log("Ai/recommendation \n",res.payload);
       return NextResponse.json(res.payload);
     } else {
       return NextResponse.json(

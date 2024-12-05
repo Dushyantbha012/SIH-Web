@@ -13,6 +13,7 @@ export async function POST(req: Request) {
                 audio_url: audioUrl,
             },
           })
+        console.log('Cultural-fit \n', res.payload);
       
           return NextResponse.json(res.payload);
     } catch (error) {

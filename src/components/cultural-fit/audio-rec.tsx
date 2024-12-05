@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { generateReactHelpers } from "@uploadthing/react/hooks";
+import { generateReactHelpers } from "@uploadthing/react";
 import type { OurFileRouter } from "@/app/api/core";
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"

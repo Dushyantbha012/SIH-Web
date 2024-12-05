@@ -17,7 +17,7 @@ export async function POST(request: Request) {
                 question_responses: responses,
             },
           })
-
+          console.log('Analyze responses \n', res.payload);
         return NextResponse.json(res.payload);
 
     } catch (error) {

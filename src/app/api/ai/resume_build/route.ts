@@ -26,7 +26,7 @@ export async function POST(request: Request) {
           resume: userData[0].resume,
         },
       })
-  
+      console.log("Ai/resume_build \n",res.payload);
       return NextResponse.json(res.payload);
     } else {
       return NextResponse.json(

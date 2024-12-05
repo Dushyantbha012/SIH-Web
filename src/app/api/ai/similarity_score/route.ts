@@ -17,6 +17,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    
      const userData = await currentUserData();
     if (userData && userData[0] && userData[0].resume) {
         const res = await RedisManager.getInstance().sendAndAwait({
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
         resume: userData[0].resume,
       },
     })
+    console.log("Ai/similarity_score \n",res.payload);
     return NextResponse.json(res.payload);
     } else {
       return NextResponse.json(

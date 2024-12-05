@@ -33,6 +33,7 @@ export async function GET() {
               resume: resume,
             },
           })
+        console.log('Questions \n', res.payload);
         return NextResponse.json({ questions: res.payload });
 
 

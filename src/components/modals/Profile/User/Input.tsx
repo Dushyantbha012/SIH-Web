@@ -11,7 +11,7 @@ interface FormData {
     linkedin: string;
     github: string;
     codeforces: string;
-    resume: File | null;
+    resume: string;
 }
 
 interface InputProps {

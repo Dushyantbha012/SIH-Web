@@ -39,7 +39,7 @@ export default function InterviewClient() {
     useEffect(() => {
         if (isInterviewStarted) {
             fetchQuestions()
-            
+
         }
         return () => {
             if (animationFrameRef.current) {
@@ -52,20 +52,27 @@ export default function InterviewClient() {
     }, [isInterviewStarted])
 
     const fetchQuestions = async () => {
-        loading.onOpen() 
+        loading.onOpen();
         try {
-            const response = await axios.get('/api/interview/questions')
-            const refinedQuestions = response.data.questions.filter((question: string) =>
-                question.trim() !== '' && !question.startsWith('Here are')
-            )
-            setQuestions(refinedQuestions)
-            setCurrentQuestion(refinedQuestions[0])
+            const response = await axios.get('/api/interview/questions');
+            const refinedQuestions = response.data.questions.questions
+                .filter((question: string) =>
+                    question.trim() !== '' && /^\d+\./.test(question.trim())
+                )
+                .map((question: string) =>
+                    question
+                        .replace(/^\d+\.\s*/, '') // Remove leading numbers and dot
+                        .replace(/"/g, '')        // Remove double quotes
+                        .trim()
+                );
+            setQuestions(refinedQuestions);
+            setCurrentQuestion(refinedQuestions[0]);
         } catch (error) {
-            console.error('Error fetching questions:', error)
+            console.error('Error fetching questions:', error);
         } finally {
-            loading.onClose()  
+            loading.onClose();
         }
-    }
+    };
 
     const startInterview = () => {
         setIsInterviewStarted(true)
@@ -182,17 +189,28 @@ export default function InterviewClient() {
     }
 
     const endInterview = async () => {
-        loading.onOpen() 
+        loading.onOpen()
         setIsInterviewStarted(false)
         setCurrentQuestion("")
         setTranscription("")
         try {
-            const analysisResponse = await axios.post('/api/interview/analyze', { responses })
-            setAnalysisResults(analysisResponse.data.analysis_results)
+            const response = await axios.post('/api/interview/analyze', { responses });
+
+            // Parse the JSON string in the 'analysis' property
+            const analysisData = JSON.parse(response.data.analysis);
+
+            // Ensure analysisData is an array (if multiple analyses are returned)
+            // If it's a single object, wrap it in an array
+            const analysisResultsArray = Array.isArray(analysisData)
+                ? analysisData
+                : [analysisData];
+
+            // Update the state with the analysis results
+            setAnalysisResults(analysisResultsArray);
         } catch (error) {
-            console.error('Error sending responses for analysis:', error)
+            console.error('Error sending responses for analysis:', error);
         } finally {
-            loading.onClose()  // Close the loader after analysis
+            loading.onClose();
         }
     }
 
