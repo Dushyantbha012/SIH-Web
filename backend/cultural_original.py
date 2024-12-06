@@ -50,28 +50,15 @@ wf.setframerate(RATE)
 wf.writeframes(b''.join(frames))
 wf.close()
 
-# print("* recording")
-# def delayed_print():
-#     time.sleep(30)  # Wait for 30 seconds
-#     print("* done recording")
-
-# # Start the delayed print in a new thread
-# thread = threading.Thread(target=delayed_print)
-# thread.start()
-
-# Load the audio file
 audio = AudioSegment.from_wav(WAVE_OUTPUT_FILENAME)
 
-# Split the audio into 6 parts - for 30 second audio file 
 segment_length = len(audio) // 6 
 audio_segments = [audio[i * segment_length:(i + 1) * segment_length] for i in range(6)]
 
-# Initialize list to store results
 new_list = []
 emotions = []
 text_segments = []
 
-# Function to convert complete audio from speech to text
 def stt_full() :
     recognizer = sr.Recognizer()
     with sr.AudioFile("output.wav") as source:
@@ -79,14 +66,12 @@ def stt_full() :
 
     try:
         text = recognizer.recognize_google(audio_data)
-        # print(f"Extracted Text for segment {segment_index}: {text}")
         text_segments.append(f"Complete answer: {text}")
     except sr.UnknownValueError:
         print(f"Google Web Speech could not understand the audio in full answer")
     except sr.RequestError:
         print(f"Could not request results from Google Web Speech API for segment full answer")
 
-# Function to process each audio segment with Hume API and STT
 async def process_segment(segment, segment_index):
     segment_filename = f"output_segment_{segment_index}.wav"
     segment.export(segment_filename, format="wav") 
@@ -103,22 +88,18 @@ async def process_segment(segment, segment_index):
     top_3_emotions = sorted(result, key=lambda x: x['score'], reverse=True)[:3]
     new_list.append(top_3_emotions)
 
-    # Print top 3 emotions for the segment
     current_emotions = []
     for emotion in top_3_emotions:
-        # print(f"{emotion['name']} : {emotion['score']}")
         current_emotions.append(f"{emotion['name']} : {emotion['score']}")
     
     emotions.append(current_emotions)
 
-    # Perform STT on the segment
     recognizer = sr.Recognizer()
     with sr.AudioFile(segment_filename) as source:
         audio_data = recognizer.record(source)
 
     try:
         text = recognizer.recognize_google(audio_data)
-        # print(f"Extracted Text for segment {segment_index}: {text}")
         text_segments.append(f"Text for segment {segment_index}: {text}")
     except sr.UnknownValueError:
         print(f"Google Web Speech could not understand the audio in segment {segment_index}")
@@ -179,11 +160,7 @@ Top 3 emotions for segment 5:
 {emotions[5][1]}
 {emotions[5][2]}
 """
-    # output = ollama.generate(
-    #     model="llama3.1",
-    #     prompt=prompt,
-    # )
-    # return output["response"]
+   
     client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
     chat_completion = client.chat.completions.create(
     messages=[
@@ -200,14 +177,12 @@ Top 3 emotions for segment 5:
 
 def delete_files() :
     import os
-    # os.remove("output.wav")
     for i in range(6) :
         os.remove(f"output_segment_{i}.wav")
 
-# Process all segments sequentially
 async def measurer():
     tasks = [process_segment(segment, i) for i, segment in enumerate(audio_segments)]
-    await asyncio.gather(*tasks)  # Concurrently process segments
+    await asyncio.gather(*tasks)  
 
     stt_full()
     generate_summary(emotions, text_segments, "Where do you see yourself in 5 years")

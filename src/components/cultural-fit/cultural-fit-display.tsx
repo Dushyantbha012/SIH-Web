@@ -42,19 +42,27 @@ export function CulturalFitAnalysis({ emotions }: CulturalFitAnalysisProps) {
             },
         },
         scales: {
+            x: {
+                stacked: true,
+            },
             y: {
-                beginAtZero: true,
-                max: 1,
+                stacked: true,
+                display: false,
             },
         },
     };
 
+    const allEmotions = Array.from(new Set(emotions.flatMap(segment => segment.map(e => e.name))));
+
     const chartData = {
-        labels: emotions[0].map(emotion => emotion.name),
-        datasets: emotions.map((segment, index) => ({
-            label: `Segment ${index + 1}`,
-            data: segment.map(emotion => emotion.value),
-            backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.5)`,
+        labels: emotions.map((_, index) => `Segment ${index + 1}`),
+        datasets: allEmotions.map((emotion, index) => ({
+            label: emotion,
+            data: emotions.map(segment => {
+                const emotionData = segment.find(e => e.name === emotion);
+                return emotionData ? emotionData.value : 0;
+            }),
+            backgroundColor: `hsl(${index * 30}, 70%, 50%)`,
         })),
     };
 
@@ -68,7 +76,7 @@ export function CulturalFitAnalysis({ emotions }: CulturalFitAnalysisProps) {
                     <Bar options={options} data={chartData} />
                 </div>
             </CardContent>
-            
         </Card>
     );
 }
+

@@ -4,7 +4,7 @@ import Heading from "../../ModalInputs/Heading";
 import Input from "./Input";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import useCreateProfile from "@/hooks/useCreateProfile";
 import Calendar from "../../ModalInputs/calendar";
 import { FaFileCode } from "react-icons/fa";
@@ -15,6 +15,7 @@ import { FaSchoolFlag } from "react-icons/fa6";
 import toast from "react-hot-toast";
 import axios from "axios";
 import CategoryInput from "../../ModalInputs/categoryInput";
+import { UploadDropzone } from "@/lib/uploadThing/uploadThing";
 const pathItems = [
   {
     label: "Software",
@@ -61,7 +62,7 @@ interface FormData {
   linkedin: string;
   github: string;
   codeforces: string;
-  resume: File | null;
+  resume: string;
 }
 
 enum STEPS {
@@ -88,7 +89,7 @@ const ProfileModal = () => {
       linkedin: "",
       github: "",
       codeforces: "",
-      resume: null,
+      resume: "",
     },
   });
 
@@ -98,7 +99,9 @@ const ProfileModal = () => {
   const [date, setDate] = useState<Date>(new Date());
   const [path, setPath] = useState<string[]>([]);
   const [education, setEducation] = useState<string>("");
-  const [resume, setResume] = useState<File | null>(null);
+  const [resume, setResume] = useState("");
+  const uploadToastId = useRef<string | number | undefined>(undefined);
+  const [fileName, setFileName] = useState<string>("");
   const addToPath = (newString: string) => {
     if (path.includes(newString)) {
       // If the string exists, remove it using filter
@@ -141,6 +144,7 @@ const ProfileModal = () => {
             birthdate: date,
             education: education,
             path: path,
+            resume: resume,
           },
         })
         .then(() => {
@@ -153,6 +157,7 @@ const ProfileModal = () => {
         .finally(() => {
           setIsLoading(false);
         });
+      console.log("profileData", profileData);
     } catch (error) {
       console.error("Error submitting data:", error);
     }
@@ -291,33 +296,32 @@ const ProfileModal = () => {
   if (step === STEPS.RESUME) {
     bodyContent = (
       <div className="file_upload p-5 border-4 border-dotted border-gray-300 rounded-lg">
-        <svg
-          className="text-indigo-500 w-16 h-16 mx-auto mb-4"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-          />
-        </svg>
+        
         <div className="input_field flex flex-col items-center">
-          <label>
-            <input
-              className="text-sm cursor-pointer w-36 hidden"
-              type="file"
-              onChange={(e) =>
-                setResume(e.target.files ? e.target.files[0] : null)
+          <UploadDropzone
+            endpoint="resume"
+            onClientUploadComplete={(res: any) => {
+              setResume(res[0].url);
+              setFileName(res[0].name);
+              if (uploadToastId.current !== undefined) {
+                toast.success("Resume uploaded successfully!", { id: uploadToastId.current as string });
+                uploadToastId.current = undefined;
               }
-            />
-            <div className="text bg-indigo-600 text-white border border-gray-300 rounded font-semibold cursor-pointer p-2 px-4 hover:bg-indigo-500">
-              Select File
-            </div>
-          </label>
+              console.log(res)
+              
+            }}
+            onUploadBegin={() => {
+              uploadToastId.current = toast.loading("Resume uploading...");
+            }}
+            onUploadError={(error: Error) => {
+              if (uploadToastId.current !== undefined) {
+                toast.error(`Error uploading file: ${error.message}`, { id: uploadToastId.current as string });
+                uploadToastId.current = undefined;
+              }
+            }}
+          />
+          <span className="text-black text-sm">Selected File : {fileName}</span>
+          {errors.resume && <span className="text-red-500">{errors.resume.message}</span>}
         </div>
       </div>
     );

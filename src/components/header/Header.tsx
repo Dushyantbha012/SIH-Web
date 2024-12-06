@@ -38,6 +38,7 @@ export default function Header() {
       ],
     },
     { name: "Interview", href: "/interview" },
+    { name: "Cultural Fit", href: "/cultural-fit" },
   ]
 
   return (

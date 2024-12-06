@@ -13,31 +13,27 @@ model User {
   birthdate DateTime   @default("1900-01-01T00:00:00.000Z") // Default to January 1, 1900
   education String     @default("Not specified") // Default education
   path      String[]   @default([]) // Default to an empty array
-  profiles  Profile[]  @relation("UserProfiles") // No default needed for relations
   UserData  UserData[] // No default needed for relations
   complete  Boolean    @default(false) // Default to false
 }
 
-model Profile {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  profileName String
-  userId      String
-  user        User       @relation("UserProfiles", fields: [userId], references: [id])
-  UserData    UserData[]
-  basicScore  Int        @default(0)
+// model Profile {
+//   id          String @id @default(auto()) @map("_id") @db.ObjectId
+//   profileName String
+//   userId      String
+//   user        User   @relation("UserProfiles", fields: [userId], references: [id])
+//   basicScore  Int    @default(0)
 
-  @@unique([userId, profileName]) // Composite unique constraint
-}
+//   @@unique([userId, profileName]) // Composite unique constraint
+// }
 
 model UserData {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String
-  profileId String  @db.ObjectId
-  qna       Json
-  user      User    @relation(fields: [userId], references: [id])
-  profile   Profile @relation(fields: [profileId], references: [id])
-  resume    String
-  complete  Boolean @default(false)
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String
+  qna      Json
+  user     User    @relation(fields: [userId], references: [id])
+  resume   String
+  complete Boolean @default(false)
 }
 
 model Recruiter {
@@ -61,4 +57,7 @@ model Joblisting {
   jobType          String // intern, full-time, etc.
   mode             String // remote, on-site, hybrid
   organization     String // Add this field to store the organization type (gov/private)
+  title            String
+  salary           String
+  createdAt        DateTime  @default(now())
 }
