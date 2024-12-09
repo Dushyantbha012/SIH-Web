@@ -1,4 +1,3 @@
-import { currentProfile } from "@/lib/profile/currentProfile";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { initialProfileRecruiter } from "@/lib/profile/initialProfileRecruiter";
@@ -56,7 +55,9 @@ export async function POST(req: Request) {
         location,
         jobType,
         mode,
-        organization
+        organization,
+        title: "Default Title", // Add appropriate title
+        salary: "Default Salary" // Add appropriate salary
       },
     });
     await db.recruiter.update({

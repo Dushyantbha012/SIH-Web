@@ -175,8 +175,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import axios from "axios";
-import { currentProfile } from "@/lib/profile/currentProfile";
-import { currentUserData } from "@/lib/profile/currentUserData";
 
 type Job = {
   id: number;

@@ -8,6 +8,6 @@ export const isProfileComplete = async () => {
     if(!userId){
         return false;
     }
-    const profile = await db.profile.findUnique({ where: { id: userId } });
+    const profile = await db.user.findUnique({ where: { id: userId } });
 
 }

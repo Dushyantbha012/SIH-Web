@@ -1,4 +1,4 @@
-// import { currentProfile } from "@/lib/profile/currentProfile";
+
 // import { db } from "@/lib/db";
 // import { NextResponse } from "next/server";
 // import { initialProfile } from "@/lib/profile/initialProfile";

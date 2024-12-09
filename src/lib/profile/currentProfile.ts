@@ -8,7 +8,7 @@ export const currentProfile = async () => {
     return null;
   }
 
-  const profile = await db.profile.findUnique({ where: { id: userId } });
+  const profile = await db.user.findUnique({ where: { id: userId } });
 
   return profile;
 };
