@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { RedisManager } from "@/lib/redis/RedisManager";
+import { RedisManager } from "@/lib/redis/RedisManagerOther";
 import { GET_RECOMMENDATION } from "@/lib/redis/types";
 import axios from "axios";
 import { currentUserData } from "@/lib/profile/currentUserData";

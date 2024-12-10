@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/lib/db';
-import axios from 'axios';
-
-import { RedisManager } from '@/lib/redis/RedisManager';
+import { RedisManager } from '@/lib/redis/RedisManagerOther';
 import { GET_QUESTIONS } from '@/lib/redis/types';
 
 
@@ -15,8 +13,7 @@ export async function GET() {
          const userData = await db.userData.findFirst({
              where: {
                  //@ts-ignore
-                 userId: userId,
-                 complete: true
+                 userId: userId
              },
              select: {
                  resume: true
@@ -24,7 +21,7 @@ export async function GET() {
          });
 
          if (!userData || !userData.resume) {
-             return NextResponse.json({ error: 'No resume URL found for the user.' }, { status: 404 });
+             return NextResponse.json({ error: 'No resume URL found for the user.' }, { status: 400 });
          } 
         const resume = userData.resume;
         const res = await RedisManager.getInstance().sendAndAwait({

@@ -1,4 +1,4 @@
-import { RedisManager } from '@/lib/redis/RedisManager';
+import { RedisManager } from '@/lib/redis/RedisManagerCultural';
 import { GET_CULTURAL_FIT } from '@/lib/redis/types';
 import { NextResponse } from 'next/server';
 

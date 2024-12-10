@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { RedisManager } from '@/lib/redis/RedisManager';
+import { RedisManager } from '@/lib/redis/RedisManagerOther';
 import { GET_INTERVIEW_ANALYSIS } from '@/lib/redis/types';
 
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { RedisManager } from "@/lib/redis/RedisManager";
+import { RedisManager } from "@/lib/redis/RedisManagerOther";
 import { GET_RESUME_BUILD } from "@/lib/redis/types";
 import { currentUserData } from "@/lib/profile/currentUserData";
 
