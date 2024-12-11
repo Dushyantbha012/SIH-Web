@@ -8,6 +8,7 @@ import useMentor from "@/hooks/useMentor";
 import useRecruiter from "@/hooks/useRecruiter";
 import useResumeAnalyse from "@/hooks/useResumeAnalyse";
 import useResumeBuild from "@/hooks/useResumeBuild";
+import { useRouter } from "next/navigation";
 export default function profile() {
   const enterRole = useEnterRole();
   const recruiter = useRecruiter();
@@ -16,6 +17,7 @@ export default function profile() {
   const resumeAnalyse = useResumeAnalyse();
   const mentor = useMentor();
   const jobSeeker = useJobSeeker();
+  const router = useRouter();
   return (
     <div className="m-20">
       <div className="flex justify-center items-center mb-6">
@@ -54,7 +56,7 @@ export default function profile() {
         )}
         {(!recruiter.isRecruiter && mentor.isMentor && !jobSeeker.isJobSeeker) && (
           <button
-            onClick={()=>{}}
+            onClick={()=>{router.push('/mentor/dashboard')}}
             className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-bold py-2 px-6 rounded"
           >
             View Meetings

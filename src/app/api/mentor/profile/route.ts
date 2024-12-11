@@ -25,8 +25,10 @@ export async function POST(req: Request, res: NextResponse) {
             return new NextResponse("missing fields", { status: 404 });
         }
         console.log("third");
+        const cUser = await currentUser();
         let user = await db.mentor.create({
             data: {
+                userId: cUser!.id,
                 name,
                 designation,
                 aboutMentor: about,
@@ -36,6 +38,16 @@ export async function POST(req: Request, res: NextResponse) {
                 skills,
             },
         });
+        return NextResponse.json(user);
+    } catch (error) {
+        console.log("USER_PROFILE \n", error);
+        return new NextResponse("Internal Error", { status: 500 });
+    }
+}
+
+export async function GET(req: Request, res: NextResponse) {
+    try {
+        const user = await db.mentor.findMany();
         return NextResponse.json(user);
     } catch (error) {
         console.log("USER_PROFILE \n", error);

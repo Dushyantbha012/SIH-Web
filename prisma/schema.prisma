@@ -81,13 +81,22 @@ model UserApplications {
 }
 
 model Mentor {
-  id             String @id @default(uuid()) @map("_id")
-  name           String @default("Anonymous") // Default name
+  id             String     @id @default(uuid()) @map("_id")
+  userId         String     @unique
+  name           String     @default("Anonymous") // Default name
   designation    String
   aboutMentor    String
   qualifications String
   experience     String
   email          String
   skills         String
-  schedule       Json @default("[]")
+  schedule       Meetings[]
+}
+
+model Meetings {
+  id         String   @id @default(uuid()) @map("_id")
+  mentorName String
+  mentorId   String
+  mentor     Mentor   @relation(fields: [mentorId], references: [id])
+  dateTime   DateTime
 }

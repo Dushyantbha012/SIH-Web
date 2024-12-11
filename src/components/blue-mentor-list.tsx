@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,142 +21,75 @@ import { Calendar } from "@/components/ui/calendar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, Clock, Calendar as CalendarIcon } from "lucide-react";
 import toast from "react-hot-toast";
+import { currentUserData } from "@/lib/profile/currentUserData";
+import axios from "axios";
+import { currentProfile } from "@/lib/profile/currentProfile";
 
 type Mentor = {
   id: number;
   name: string;
   expertise: string;
-  yearsOfExperience: number;
+  experience:string;
   avatar: string;
 };
-
-const mentors: Mentor[] = [
-  {
-    id: 1,
-    name: "Alice Johnson",
-    expertise: "Web Development",
-    yearsOfExperience: 8,
-    avatar: "/placeholder.svg?height=100&width=100",
-  },
-  {
-    id: 2,
-    name: "Bob Smith",
-    expertise: "Data Science",
-    yearsOfExperience: 5,
-    avatar: "/placeholder.svg?height=100&width=100",
-  },
-  {
-    id: 3,
-    name: "Carol Williams",
-    expertise: "UX Design",
-    yearsOfExperience: 10,
-    avatar: "/placeholder.svg?height=100&width=100",
-  },
-  {
-    id: 4,
-    name: "David Brown",
-    expertise: "Mobile Development",
-    yearsOfExperience: 7,
-    avatar: "/placeholder.svg?height=100&width=100",
-  },
-  {
-    id: 5,
-    name: "Eva Martinez",
-    expertise: "Machine Learning",
-    yearsOfExperience: 6,
-    avatar: "/placeholder.svg?height=100&width=100",
-  },
-  {
-    "id": 6,
-    "name": "Arjun Patel",
-    "expertise": "Data Science",
-    "yearsOfExperience": 5,
-    "avatar": "/placeholder.svg?height=100&width=100"
-  },
-  {
-    "id": 7,
-    "name": "Sophia Zhang",
-    "expertise": "AI Ethics",
-    "yearsOfExperience": 4,
-    "avatar": "/placeholder.svg?height=100&width=100"
-  },
-  {
-    "id": 8,
-    "name": "Liam Johnson",
-    "expertise": "Natural Language Processing",
-    "yearsOfExperience": 7,
-    "avatar": "/placeholder.svg?height=100&width=100"
-  },
-  {
-    "id": 9,
-    "name": "Emily Williams",
-    "expertise": "Computer Vision",
-    "yearsOfExperience": 6,
-    "avatar": "/placeholder.svg?height=100&width=100"
-  },
-  {
-    "id": 10,
-    "name": "Ravi Sharma",
-    "expertise": "Deep Learning",
-    "yearsOfExperience": 8,
-    "avatar": "/placeholder.svg?height=100&width=100"
-  },
-  {
-    "id": 11,
-    "name": "Olivia Brown",
-    "expertise": "Robotics",
-    "yearsOfExperience": 5,
-    "avatar": "/placeholder.svg?height=100&width=100"
-  },
-  {
-    "id": 12,
-    "name": "Ethan Clark",
-    "expertise": "Reinforcement Learning",
-    "yearsOfExperience": 7,
-    "avatar": "/placeholder.svg?height=100&width=100"
-  },
-  {
-    "id": 13,
-    "name": "Priya Singh",
-    "expertise": "Big Data Analytics",
-    "yearsOfExperience": 9,
-    "avatar": "/placeholder.svg?height=100&width=100"
-  },
-  {
-    "id": 14,
-    "name": "Daniel Lee",
-    "expertise": "Autonomous Systems",
-    "yearsOfExperience": 6,
-    "avatar": "/placeholder.svg?height=100&width=100"
-  },
-  {
-    "id": 15,
-    "name": "Grace Kim",
-    "expertise": "Edge Computing",
-    "yearsOfExperience": 4,
-    "avatar": "/placeholder.svg?height=100&width=100"
-  },
-  {
-    "id": 16,
-    "name": "Michael Garcia",
-    "expertise": "Cloud AI",
-    "yearsOfExperience": 5,
-    "avatar": "/placeholder.svg?height=100&width=100"
-  }
-];
 
 export function BlueMentorList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [expertiseFilter, setExpertiseFilter] = useState("all");
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-
+  const [mentors, setMentors] = useState<Mentor[]>([]);
+  async function fetchMentors() {
+    try {
+      const response = await axios.get('/api/mentor/profile');
+      setMentors(response.data);
+    } catch (error) {
+      console.error('Error fetching mentors:', error);
+    }
+  }
+  useEffect(() => {
+    toast.promise(fetchMentors(), {
+      loading: "Loading mentors...",
+      success: "Mentors loaded",
+      error: "Failed to load mentors",
+    });
+  }, []);
   const filteredMentors = mentors.filter(
     (mentor) =>
       mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
       (expertiseFilter === "all" || mentor.expertise === expertiseFilter)
   );
 
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string>('');
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
+  const scheduleMeet = async () => {
+    if (!selectedMentor || !selectedDateTime) {
+      toast.error("Please select a mentor, date, and time.");
+      return;
+    }
+    try {
+      await axios.post('/api/mentor/schedule', {
+        mentorId: selectedMentor.id,
+        dateTime: selectedDateTime.toISOString(),
+        mentorName : selectedMentor.name
+      });
+      toast.success("Meeting confirmed with " + selectedMentor.name);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to confirm meeting.");
+    }
+  
+  }
+  useEffect(() => {
+    if (selectedDate && selectedTime) {
+      const dateTime = new Date(selectedDate);
+      const [hours, minutes] = selectedTime.split(':');
+      dateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      setSelectedDateTime(dateTime);
+    } else {
+      setSelectedDateTime(null);
+    }
+  }, [selectedDate, selectedTime]);
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <h1 className="text-3xl font-light mb-8 text-center text-blue-800">
@@ -211,7 +144,7 @@ export function BlueMentorList() {
               </h2>
               <p className="text-sm text-blue-600">{mentor.expertise}</p>
               <p className="text-xs text-blue-400">
-                {mentor.yearsOfExperience} years of experience
+                {mentor.experience} 
               </p>
             </div>
             <Dialog>
@@ -233,7 +166,7 @@ export function BlueMentorList() {
                 <div className="grid gap-4 pt-4">
                   <Calendar
                     mode="single"
-                    selected={selectedDate}
+                    selected={selectedDate || undefined}
                     onSelect={(day) => {
                       if (day) {
                         setSelectedDate(day);
@@ -241,7 +174,9 @@ export function BlueMentorList() {
                     }}
                     className="rounded-md border border-blue-200"
                   />
-                  <Select>
+                  <Select onValueChange={(value) => {
+                    setSelectedTime(value);
+                  }}>
                     <SelectTrigger className="bg-blue-50 border-blue-200 focus:border-blue-400 focus:ring-blue-400">
                       <SelectValue placeholder="Select time" />
                     </SelectTrigger>
@@ -254,9 +189,16 @@ export function BlueMentorList() {
                       <SelectItem value="15:00">03:00 PM</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={()=>{
-                    toast.success("Meeting confirmed with "+selectedMentor?.name);
-                  }}>
+                  <Button
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={async () => {
+                      toast.promise(scheduleMeet(), {
+                        loading: "Scheduling meeting...",
+                        success: "Meeting confirmed",
+                        error: "Failed to confirm meeting",
+                      });
+                    }}
+                  >
                     Confirm Meeting
                   </Button>
                   
