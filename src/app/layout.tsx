@@ -24,7 +24,7 @@ export default async function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className="font-sans">
+        <body className="font-sans min-h-screen">
           <ToasterProvider/>
           <Header />
           <ProfileModal />
