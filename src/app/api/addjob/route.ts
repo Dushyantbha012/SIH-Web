@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { initialProfileRecruiter } from "@/lib/profile/initialProfileRecruiter";
 import { currentUser } from "@clerk/nextjs/server";
 
-interface CreateJobRequest {
+interface CreateJobRequest  {
+  title: string; // Add this line
   description: string;
   responsibilities: string;
   requirements: string;
@@ -11,7 +12,8 @@ interface CreateJobRequest {
   location: string;
   jobType: string;
   mode: string;
-  
+  jobPath: string; // Include jobPath
+  salary: string;
 }
 
 export async function POST(req: Request) {
@@ -20,35 +22,28 @@ export async function POST(req: Request) {
     const recruiterId = user?.id;
 
     if (!recruiterId) {
-      return new NextResponse("Unauthorised", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const profile = await initialProfileRecruiter();
-    if (!profile) {
-      return new NextResponse("Unauthorised", { status: 401 });
-    }
-
-    
-    const reqData: CreateJobRequest = await req.json();
-
+    const body: CreateJobRequest = await req.json();
     const {
+      title, // Extract the title
       description,
       responsibilities,
       requirements,
       experience,
       location,
       jobType,
-      mode
-    } = reqData;
+      mode,
+      jobPath,
+      salary,
+    } = body;
 
-    if (!description || !responsibilities || !requirements || !experience || !location || !jobType || !mode) {
-      return new NextResponse("Missing fields", { status: 400 });
-    }
-
-    const organization = profile.organization;
+    // Create the job listing in the database
     const jobListing = await db.joblisting.create({
       data: {
-        recruiterId,
+        recruiterId: recruiterId,
+        title, // Include the title
         description,
         responsibilities,
         requirements,
@@ -56,29 +51,16 @@ export async function POST(req: Request) {
         location,
         jobType,
         mode,
-        organization,
-        title: "Default Title", // Add appropriate title
-        salary: "Default Salary" // Add appropriate salary
-      },
-    });
-    await db.recruiter.update({
-      where: {
-        id: profile.id,
-      },
-      data: {
-        jobListings: {
-          connect: { id: jobListing.id },
-        },
+        jobPath,
+        organization: "Default Organization", // Adjust as needed
+        salary,
       },
     });
 
-    return NextResponse.json({
-      message: 'Job listing created successfully',
-      jobListing,
-    }, { status: 201 });
-
-  } catch (error) {
-    console.error("Error creating job listing: ", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    // Return the created job listing
+    return NextResponse.json(jobListing, { status: 201 });
+  } catch (error: any) {
+    console.error("Error creating job listing:", error);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }

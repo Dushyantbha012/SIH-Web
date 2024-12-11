@@ -12,6 +12,7 @@ interface FormData {
     github: string;
     codeforces: string;
     resume: string;
+    email: string;
 }
 
 interface InputProps {

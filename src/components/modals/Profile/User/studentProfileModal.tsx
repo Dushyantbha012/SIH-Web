@@ -63,6 +63,7 @@ interface FormData {
   github: string;
   codeforces: string;
   resume: string;
+  email: string;
 }
 
 enum STEPS {
@@ -72,6 +73,7 @@ enum STEPS {
   EDUCATION = 3,
   SOCIALS = 4,
   RESUME = 5,
+  EMAIL = 6
 }
 
 const ProfileModal = () => {
@@ -120,7 +122,7 @@ const ProfileModal = () => {
   };
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    if (step !== STEPS.RESUME) {
+    if (step !== STEPS.EMAIL) {
       return onNext();
     }
 
@@ -134,6 +136,7 @@ const ProfileModal = () => {
       github: data.github,
       codeforces: data.codeforces,
       resume: resume,
+      email : data.email
     };
     console.log(profileData);
     try {
@@ -145,6 +148,7 @@ const ProfileModal = () => {
             education: education,
             path: path,
             resume: resume,
+            email : data.email
           },
         })
         .then(() => {
@@ -164,7 +168,7 @@ const ProfileModal = () => {
   };
 
   const actionLabel = useMemo(() => {
-    if (step === STEPS.RESUME) {
+    if (step === STEPS.EMAIL) {
       return "Create";
     }
     return "Next";
@@ -200,6 +204,22 @@ const ProfileModal = () => {
         />
         <Calendar value={date} onChange={(value) => setDate(value)} />
         <p>Selected Date: {date.toDateString()}</p>
+      </div>
+    );
+  }
+
+  if (step === STEPS.EMAIL) {
+    bodyContent = (
+      <div className="flex flex-col gap-8">
+        <Heading title="Enter your email" subtitle="Enter your email" />
+        <Input
+          id="email"
+          label="Your Email Id"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+        />
       </div>
     );
   }
