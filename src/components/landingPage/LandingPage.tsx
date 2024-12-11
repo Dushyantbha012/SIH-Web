@@ -147,9 +147,9 @@ export default function LandingPage() {
             </div>
             <div className="order-1 md:order-2">
               <img
-                src="/engage.jpeg"
-                width="550"
-                height="400"
+                src="/talent.png"
+                width="600"
+                height="800"
                 alt="Talent Retention"
                 className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full"
               />
@@ -166,7 +166,7 @@ export default function LandingPage() {
               workflows.
             </p>
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="p-6 rounded-lg shadow-lg bg-card">
+              <Card className="p-6 rounded-lg shadow-lg bg-card bg-gradient-to-r from-cyan-200 to-blue-200">
                 <CardHeader>
                   <CardTitle>Applicant Tracking Systems</CardTitle>
                   <CardDescription>
@@ -189,7 +189,7 @@ export default function LandingPage() {
                   <hr className="my-4 border-muted" />
                 </CardContent>
               </Card>
-              <Card className="p-6 rounded-lg shadow-lg bg-card">
+              <Card className="p-6 rounded-lg shadow-lg bg-card bg-gradient-to-r from-cyan-200 to-blue-200">
                 <CardHeader>
                   <CardTitle>HRIS Systems</CardTitle>
                   <CardDescription>
@@ -211,7 +211,7 @@ export default function LandingPage() {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="p-6 rounded-lg shadow-lg bg-card">
+              <Card className="p-6 rounded-lg shadow-lg bg-card bg-gradient-to-r from-cyan-200 to-blue-200">
                 <CardHeader>
                   <CardTitle>Video Conferencing</CardTitle>
                   <CardDescription>
