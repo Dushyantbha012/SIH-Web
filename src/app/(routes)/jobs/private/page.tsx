@@ -223,7 +223,8 @@ export default function Component() {
     const res = await axios.post("/api/ai/similarity_score", {
       job_description: job.description,
     });
-    setScore(res.data);
+    console.log("in jobs ",res.data)
+    setScore(res.data.score);
   };
   const handleSortChange = (value: SetStateAction<string>) => {
     setSortBy(value);
@@ -586,7 +587,7 @@ export default function Component() {
                             <Label className="text-right">Entity Match</Label>
                             <div className="col-span-3">
                               {score
-                                ? score.entity_match_score.toFixed(2)
+                                ? score.entity_match_score.toFixed(3)
                                 : "N/A"}
                             </div>
                           </div>
@@ -594,7 +595,7 @@ export default function Component() {
                             <Label className="text-right">Keyword Match</Label>
                             <div className="col-span-3">
                               {score
-                                ? score.keyword_match_score.toFixed(2)
+                                ? score.keyword_match_score.toFixed(3)
                                 : "N/A"}
                             </div>
                           </div>
@@ -603,7 +604,7 @@ export default function Component() {
                               Semantic Similarity
                             </Label>
                             <div className="col-span-3">
-                              {score?.semantic_similarity?.toFixed(2) ?? "N/A"}
+                              {score?.semantic_similarity.toFixed(3) ?? "N/A"}
                             </div>
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
@@ -611,7 +612,7 @@ export default function Component() {
                               Comprehensive Score
                             </Label>
                             <div className="col-span-3">
-                              {score?.final_comprehensive_score?.toFixed(2) ??
+                              {score?.final_comprehensive_score.toFixed(3) ??
                                 "N/A"}
                             </div>
                           </div>
