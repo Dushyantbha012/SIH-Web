@@ -37,6 +37,7 @@ model UserData {
   role        String       @default("Software")
   email       String       @default("dushayntbha012@gmail.com")
   jobListings Joblisting[]
+  applications UserApplications[]
 }
 
 model Recruiter {
@@ -66,6 +67,17 @@ model Joblisting {
   jobPath          String //Software, Marketing, Business
   UserData         UserData? @relation(fields: [userDataId], references: [id])
   userDataId       String?   @db.ObjectId
+  applicants  UserApplications[]
+}
+
+model UserApplications {
+  userDataId String @db.ObjectId
+  joblistingId String @db.ObjectId
+
+  userData UserData @relation(fields: [userDataId], references: [id])
+  joblisting Joblisting @relation(fields: [joblistingId], references: [id])
+
+  id String @id @default(uuid()) @map("_id")
 }
 
 model Mentor {
