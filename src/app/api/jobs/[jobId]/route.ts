@@ -1,4 +1,3 @@
-// app/api/jobs/[jobId]/route.ts
 import { db } from '@/lib/db';
 import { NextResponse } from 'next/server';
 

@@ -28,15 +28,16 @@ model User {
 // }
 
 model UserData {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String
-  qna         Json
-  user        User         @relation(fields: [userId], references: [id])
-  resume      String
-  complete    Boolean      @default(false)
-  role        String       @default("Software")
-  email       String       @default("dushayntbha012@gmail.com")
-  jobListings Joblisting[]
+  id           String             @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String
+  qna          Json
+  user         User               @relation(fields: [userId], references: [id])
+  resume       String
+  complete     Boolean            @default(false)
+  role         String             @default("Software")
+  email        String             @default("dushayntbha012@gmail.com")
+  jobListings  Joblisting[]
+  applications UserApplications[]
 }
 
 model Recruiter {
@@ -49,9 +50,9 @@ model Recruiter {
 }
 
 model Joblisting {
-  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
   recruiterId      String
-  recruiter        Recruiter @relation(fields: [recruiterId], references: [id], name: "RecruiterJobListings")
+  recruiter        Recruiter          @relation(fields: [recruiterId], references: [id], name: "RecruiterJobListings")
   description      String
   responsibilities String
   requirements     String
@@ -62,10 +63,21 @@ model Joblisting {
   organization     String // Add this field to store the organization type (gov/private)
   title            String
   salary           String
-  createdAt        DateTime  @default(now())
+  createdAt        DateTime           @default(now())
   jobPath          String //Software, Marketing, Business
-  UserData         UserData? @relation(fields: [userDataId], references: [id])
-  userDataId       String?   @db.ObjectId
+  UserData         UserData?          @relation(fields: [userDataId], references: [id])
+  userDataId       String?            @db.ObjectId
+  applicants       UserApplications[]
+}
+
+model UserApplications {
+  userDataId   String @db.ObjectId
+  joblistingId String @db.ObjectId
+
+  userData   UserData   @relation(fields: [userDataId], references: [id])
+  joblisting Joblisting @relation(fields: [joblistingId], references: [id])
+
+  id String @id @default(uuid()) @map("_id")
 }
 
 model Mentor {
@@ -77,4 +89,5 @@ model Mentor {
   experience     String
   email          String
   skills         String
+  schedule       Json @default("[]")
 }

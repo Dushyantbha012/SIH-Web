@@ -38,7 +38,7 @@ export default function Header() {
     { name: "Jobs", dropdown: [
         { name: "Recommended", href: "/jobs/recommended" },
         { name: "Private", href: "/jobs/private" },
-        { name: "Government", href: "/jobs/government" },
+        { name: "Government", href: "/jobs/gov" },
       ],
     },
   ]
