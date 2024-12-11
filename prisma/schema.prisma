@@ -34,6 +34,8 @@ model UserData {
   user     User    @relation(fields: [userId], references: [id])
   resume   String
   complete Boolean @default(false)
+  role     String
+  email    String
 }
 
 model Recruiter {
@@ -60,4 +62,15 @@ model Joblisting {
   title            String
   salary           String
   createdAt        DateTime  @default(now())
+}
+
+model Mentor {
+  id          String @id @default(uuid()) @map("_id")
+  name        String @default("Anonymous") // Default name
+  designation String
+  aboutMentor String
+  qualifications String
+  experience  String
+  email       String
+  skills      String
 }
