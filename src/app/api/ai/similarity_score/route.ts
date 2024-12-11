@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 import { currentUserData } from "@/lib/profile/currentUserData";
-import axios from "axios";
 import { RedisManager } from "@/lib/redis/RedisManagerSimilarity";
 import { GET_SIMILARITY_SCORE } from "@/lib/redis/types";
 
@@ -18,7 +17,7 @@ export async function POST(request: Request) {
 
   try {
     
-     const userData = await currentUserData();
+    const userData = await currentUserData();
     if (userData && userData[0] && userData[0].resume) {
         const res = await RedisManager.getInstance().sendAndAwait({
       type: GET_SIMILARITY_SCORE,

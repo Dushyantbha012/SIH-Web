@@ -1,36 +1,58 @@
-import {  GET_CULTURAL_FIT, GET_INTERVIEW_ANALYSIS,GET_QUESTIONS,GET_RECOMMENDATION,GET_RESUME_BUILD,GET_SIMILARITY_SCORE, Question_Transcript } from ".";
+import {
+  GET_CULTURAL_FIT,
+  GET_INTERVIEW_ANALYSIS,
+  GET_QUESTIONS,
+  GET_RECOMMENDATION,
+  GET_RESUME_BUILD,
+  GET_SIMILARITY_SCORE,
+  Question_Transcript,
+} from ".";
 
-export type MessagesToAI = {
-    type : typeof GET_RECOMMENDATION,
-    data:{
-        job_description:string, 
-        resume:string
+export type MessagesToAI =
+  | {
+      type: typeof GET_RECOMMENDATION;
+      data: {
+        description: String;
+        responsibilities: String;
+        requirements: String;
+        experience: String;
+        location: String;
+        jobType: String; // intern, full-time, etc.
+        mode: String; // remote, on-site, hybrid
+        organization: String; // Add this field to store the organization type (gov/private)
+        title: String;
+        salary: String;
+      };
     }
-}|{
-    type : typeof GET_RESUME_BUILD,
-    data:{
-        job_description:string, 
-        resume:string
+  | {
+      type: typeof GET_RESUME_BUILD;
+      data: {
+        job_description: string;
+        resume: string;
+      };
     }
-}|{
-    type : typeof GET_SIMILARITY_SCORE,
-    data:{
-        job_description:string, 
-        resume:string
+  | {
+      type: typeof GET_SIMILARITY_SCORE;
+      data: {
+        job_description: string;
+        resume: string;
+      };
     }
-}|{
-    type : typeof GET_INTERVIEW_ANALYSIS,
-    data:{
-        question_responses:Question_Transcript[]
+  | {
+      type: typeof GET_INTERVIEW_ANALYSIS;
+      data: {
+        question_responses: Question_Transcript[];
+      };
     }
-}|{
-    type : typeof GET_QUESTIONS,
-    data:{
-        resume:string
+  | {
+      type: typeof GET_QUESTIONS;
+      data: {
+        resume: string;
+      };
     }
-} |{
-    type: typeof GET_CULTURAL_FIT,
-    data:{
-        audio_url:string
-    }
-}
+  | {
+      type: typeof GET_CULTURAL_FIT;
+      data: {
+        audio_url: string;
+      };
+    };

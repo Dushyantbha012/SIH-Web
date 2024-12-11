@@ -28,14 +28,15 @@ model User {
 // }
 
 model UserData {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId   String
-  qna      Json
-  user     User    @relation(fields: [userId], references: [id])
-  resume   String
-  complete Boolean @default(false)
-  role     String
-  email    String
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String
+  qna         Json
+  user        User         @relation(fields: [userId], references: [id])
+  resume      String
+  complete    Boolean      @default(false)
+  role        String       @default("Software")
+  email       String       @default("dushayntbha012@gmail.com")
+  jobListings Joblisting[]
 }
 
 model Recruiter {
@@ -62,16 +63,18 @@ model Joblisting {
   title            String
   salary           String
   createdAt        DateTime  @default(now())
-  jobPath String //Software, Marketing, Business
+  jobPath          String //Software, Marketing, Business
+  UserData         UserData? @relation(fields: [userDataId], references: [id])
+  userDataId       String?   @db.ObjectId
 }
 
 model Mentor {
-  id          String @id @default(uuid()) @map("_id")
-  name        String @default("Anonymous") // Default name
-  designation String
-  aboutMentor String
+  id             String @id @default(uuid()) @map("_id")
+  name           String @default("Anonymous") // Default name
+  designation    String
+  aboutMentor    String
   qualifications String
-  experience  String
-  email       String
-  skills      String
+  experience     String
+  email          String
+  skills         String
 }
