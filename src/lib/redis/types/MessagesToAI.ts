@@ -22,6 +22,7 @@ export type MessagesToAI =
         organization: String; // Add this field to store the organization type (gov/private)
         title: String;
         salary: String;
+        resume:String
       };
     }
   | {
