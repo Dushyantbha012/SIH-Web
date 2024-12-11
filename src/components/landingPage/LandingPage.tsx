@@ -83,19 +83,19 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className="py-12 md:py-24 lg:py-32 bg-muted">
+        <section className="py-12 px-12 md:py-24 lg:py-32 bg-white">
           <div className="container px-4 md:px-6 grid md:grid-cols-2 gap-8 items-center">
             <div className="order-2 md:order-1">
               <img
-                src="/talent.jpeg"
-                width="550"
-                height="400"
+                src="/projecteval.png"
+                width="600"
+                height="800"
                 alt="Project-based Evaluations"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full"
+                // className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full"
               />
             </div>
             <div className="order-1 md:order-2 space-y-4">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-blue-900">
                 Project-based Evaluations
               </h2>
               <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground">
@@ -119,7 +119,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className="bg-card py-12 md:py-24 lg:py-32">
+        <section className="bg-card py-12 md:py-24 lg:py-32 bg-muted">
           <div className="container px-4 md:px-6 grid md:grid-cols-2 gap-8 items-center">
             <div className="order-2 md:order-1 space-y-4">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
