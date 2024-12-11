@@ -31,6 +31,6 @@ export async function GET(req: Request) {
   const userData = await currentUserData() as UserData[] | null;
   
   return NextResponse.json({ 
-    listings: userData?.[0]?.jobListings ?? [] 
+    joblisting: userData?.[0]?.jobListings ?? [] 
   });
 }
