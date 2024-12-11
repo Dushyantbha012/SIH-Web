@@ -139,32 +139,39 @@ const ProfileModal = () => {
       email : data.email
     };
     console.log(profileData);
-    try {
-      const response = await axios
-        .post("/api/user/profile", {
-          data: {
-            name: data.fullName,
-            birthdate: date,
-            education: education,
-            path: path,
-            resume: resume,
-            email : data.email
-          },
-        })
-        .then(() => {
-          toast.success("Profile Created !!");
-          createProfile.onClose();
-        })
-        .catch(() => {
-          toast.error("Something went wrong!!");
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-      console.log("profileData", profileData);
-    } catch (error) {
-      console.error("Error submitting data:", error);
+    const sendApi = async () =>{
+      try {
+        const response = await axios
+          .post("/api/user/profile", {
+            data: {
+              name: data.fullName,
+              birthdate: date,
+              education: education,
+              path: path,
+              resume: resume,
+              email: data.email
+            },
+          })
+          .then(() => {
+            toast.success("Profile Created !!");
+            createProfile.onClose();
+          })
+          .catch(() => {
+            toast.error("Something went wrong!!");
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
+        console.log("profileData", profileData);
+      } catch (error) {
+        console.error("Error submitting data:", error);
+      }
     }
+    toast.promise(sendApi(), {
+      loading: "Creating Profile...",
+      success: "Profile Created !!",
+      error: "Something went wrong!!",
+    });
   };
 
   const actionLabel = useMemo(() => {
