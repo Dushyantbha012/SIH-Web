@@ -94,7 +94,7 @@ export default function Component() {
         : [...prevFilters[type], value],
     }));
   };
-  const [recom,setRecom] = useState<any>();
+
   const handleShowMore = async (job: Job) => {
     console.log(job)
     setSelectedJob(job);
@@ -103,20 +103,6 @@ export default function Component() {
       job_description: job.description,
     });
     setScore(res.data.score);
-    const response = await axios.post("/api/ai/recommendation", {
-      description: job.description,
-          responsibilities: job.responsibilities,
-          requirements: job.requirements,
-          experience: job.experience,
-          location: job.location,
-          jobType: job.jobType,
-          mode: job.mode,
-          organization: job.organization,
-          title: job.title,
-          salary: job.salary,
-    });
-    console.log("res: ",res.data)
-    setRecom(res.data.res)
   };
   const handleSortChange = (value: SetStateAction<string>) => {
     setSortBy(value);
