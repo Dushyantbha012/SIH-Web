@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { initialProfileRecruiter } from "@/lib/profile/initialProfileRecruiter";
 import { currentUser } from "@clerk/nextjs/server";
-
+import {sendMail} from "@/lib/mailer/mailer"
 interface CreateJobRequest {
   description: string;
   responsibilities: string;
@@ -11,6 +11,7 @@ interface CreateJobRequest {
   location: string;
   jobType: string;
   mode: string;
+  jobPath:string
 }
 
 export async function POST(req: Request) {
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
       experience,
       location,
       jobType,
-      mode
+      mode,jobPath
     } = reqData;
 
     if (!description || !responsibilities || !requirements || !experience || !location || !jobType || !mode) {
@@ -56,6 +57,7 @@ export async function POST(req: Request) {
         jobType,
         mode,
         organization,
+        jobPath,
         title: "Default Title", // Add appropriate title
         salary: "Default Salary" // Add appropriate salary
       },
@@ -70,6 +72,14 @@ export async function POST(req: Request) {
         },
       },
     });
+    const usersData = await db.userData.findMany({where:{
+      role:jobPath
+    }})
+    const message = "There is a new job posting for the role of "+jobPath;
+    const htmlContent = "";
+    for (const user of usersData) {
+      sendMail("sender.mail",user.email,"New Job Posting Update",message,htmlContent)
+    }
     return NextResponse.json({
       message: 'Job listing created successfully',
       jobListing,
