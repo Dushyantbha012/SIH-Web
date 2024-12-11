@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { currentUserData } from "@/lib/profile/currentUserData";
 import axios from "axios";
-import { RedisManager } from "@/lib/redis/RedisManager";
+import { RedisManager } from "@/lib/redis/RedisManagerSimilarity";
 import { GET_SIMILARITY_SCORE } from "@/lib/redis/types";
 
 export async function POST(request: Request) {

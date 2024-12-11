@@ -8,7 +8,7 @@ export class RedisManager {
     private publisher: RedisClientType;
     private static instance: RedisManager;
   constructor() {
-    this.client = createClient();
+        this.client = createClient();
         this.client.connect();
         this.publisher = createClient();
         this.publisher.connect();

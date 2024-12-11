@@ -10,7 +10,6 @@ export default async function getQuestions() {
             where: {
                 //@ts-ignore
                 userId: userId, 
-                complete: true   
             },
             select: {
                 resume: true 
