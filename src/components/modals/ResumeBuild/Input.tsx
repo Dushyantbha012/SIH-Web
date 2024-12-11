@@ -4,12 +4,7 @@ import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { BiDollar } from "react-icons/bi";
 
 interface FormData {
-    fullName: string;
-    email: string;
-    contact: string;
-    education: string;
-    experience: string;
-    skills: string;
+    jobDescription : string;
   }
 
 interface InputProps {

@@ -94,6 +94,8 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { initialProfile } from "@/lib/profile/initialProfile";
+import { RedisManager } from "@/lib/redis/RedisManagerSimilarity";
+import { GET_SIMILARITY_SCORE } from "@/lib/redis/types";
 
 interface CreateUserRequest {
   name: string;
@@ -150,6 +152,30 @@ export async function POST(req: Request, res: NextResponse) {
           email, // Assuming profile has an email property
         },
       });
+
+      const jobs = await db.joblisting.findMany();
+      for(const job of jobs){
+        const res = await RedisManager.getInstance().sendAndAwait({
+          type: GET_SIMILARITY_SCORE,
+          data: {
+            job_description: job.description,
+            resume: userData.resume,
+          },
+      })
+  
+      if(res.type=="SIMILARITY_SCORE"&& (res.payload.score.semantic_similarity>0.4)){
+        
+        await db.userData.update({where:{
+          id:userData.id
+        }, data: {
+          jobListings: {
+            connect: {
+              id: job.id
+            }
+          }
+        }})
+      }
+      }
     }
 
     return NextResponse.json({user: updatedUser, userData}, {status: 200});

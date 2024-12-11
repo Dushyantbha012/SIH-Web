@@ -6,11 +6,13 @@ let transporter: nodemailer.Transporter | null = null;
 export async function getTransporter() {
     if(!transporter){
         const transporter = nodemailer.createTransport({
-            host: 'smtp.ethereal.email',
-            port: 587,
+          service: "Gmail",
+          host: "smtp.gmail.com",
+          port: 465,
+          secure: true,
             auth: {
-                user: 'jeanette.cronin47@ethereal.email',
-                pass: 'f2Tz1s3smjEHVta5Pt'
+                user: 'sihdemo012@gmail.com',
+                pass: 'qpsi lljx hsgw riav'
             }
         });
       return transporter;

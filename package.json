@@ -43,6 +43,7 @@
     "input-otp": "^1.2.4",
     "jest": "^29.7.0",
     "lucide-react": "^0.428.0",
+    "marked": "^15.0.3",
     "next": "^14.2.12",
     "next-cloudinary": "^6.10.1",
     "nodemailer": "^6.9.16",
