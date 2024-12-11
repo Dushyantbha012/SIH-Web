@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     const message = "There is a new job posting for the role of "+jobPath;
     const htmlContent = "";
     for (const user of usersData) {
-      sendMail("sender.mail",user.email,"New Job Posting Update",message,htmlContent)
+      sendMail(user.email,"New Job Posting Update",message,htmlContent)
     }
     return NextResponse.json({
       message: 'Job listing created successfully',
