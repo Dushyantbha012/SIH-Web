@@ -11,6 +11,7 @@ interface CreateJobRequest {
   location: string;
   jobType: string;
   mode: string;
+  
 }
 
 export async function POST(req: Request) {
@@ -70,6 +71,7 @@ export async function POST(req: Request) {
         },
       },
     });
+
     return NextResponse.json({
       message: 'Job listing created successfully',
       jobListing,

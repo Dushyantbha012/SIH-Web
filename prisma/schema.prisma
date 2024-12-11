@@ -62,6 +62,7 @@ model Joblisting {
   title            String
   salary           String
   createdAt        DateTime  @default(now())
+  jobPath String //Software, Marketing, Business
 }
 
 model Mentor {
