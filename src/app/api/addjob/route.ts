@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { initialProfileRecruiter } from "@/lib/profile/initialProfileRecruiter";
 import { currentUser } from "@clerk/nextjs/server";
 import {sendMail} from "@/lib/mailer/mailer"
+import { RedisManager } from "@/lib/redis/RedisManagerSimilarity";
+import { GET_SIMILARITY_SCORE } from "@/lib/redis/types";
 interface CreateJobRequest {
   description: string;
   responsibilities: string;
@@ -80,6 +82,30 @@ export async function POST(req: Request) {
     for (const user of usersData) {
       sendMail(user.email,"New Job Posting Update",message,htmlContent)
     }
+
+    for (const user of usersData){
+      const res = await RedisManager.getInstance().sendAndAwait({
+        type: GET_SIMILARITY_SCORE,
+        data: {
+          job_description: description,
+          resume: user.resume,
+        },
+    })
+
+    if(res.type=="SIMILARITY_SCORE"&& (res.payload.score.semantic_similarity>0.4)){
+      
+      await db.userData.update({where:{
+        id:user.id
+      }, data: {
+        jobListings: {
+          connect: {
+            id: jobListing.id
+          }
+        }
+      }})
+    }
+
+  }
     return NextResponse.json({
       message: 'Job listing created successfully',
       jobListing,
