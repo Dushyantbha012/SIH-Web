@@ -75,7 +75,7 @@ type Filters = {
     salary: string[];
 };
 
-export default function Component() {
+export default function RecommendedJobs() {
     const [selectedFilters, setSelectedFilters] = useState<Filters>({
         location: [],
         jobType: [],
