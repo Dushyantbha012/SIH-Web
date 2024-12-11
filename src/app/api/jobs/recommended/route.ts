@@ -5,15 +5,26 @@ import { currentUserData } from "@/lib/profile/currentUserData";
 
 interface JobListing {
   id: string;
+  recruiterId: string;
+  description: string;
+  responsibilities: string;
+  requirements: string;
+  experience: string;
+  location: string;
+  jobType: string;
+  mode: string;
+  organization: string;
   title: string;
-  // Add other job listing properties as needed
+  salary: string;
+  createdAt: Date;
+  jobPath: string;
+  userDataId?: string; // Optional since it's nullable in schema
 }
 
 interface UserData {
   id: string;
   userId: string;
   jobListings: JobListing[];
-  // Add other user data properties as needed
 }
 
 export async function GET(req: Request) {

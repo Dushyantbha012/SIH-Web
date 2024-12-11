@@ -8,7 +8,14 @@ export const currentUserData = async () => {
     return null;
   }
 
-  const userData = await db.userData.findMany({ where: { userId } });
-
+  const userData = await db.userData.findMany({
+    where: { userId },
+    include: {
+      jobListings: true // Include the related jobListings
+    }
+  });
+  if(userData){
+    console.log(userData[0].jobListings)
+  }
   return userData;
 };

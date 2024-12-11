@@ -1,134 +1,3 @@
-// // interface JobItem {
-// //   id: string;
-// //   recruiterId: string;
-// //   description: string;
-// //   responsibilities: string;
-// //   requirements: string;
-// //   experience: string;
-// //   location: string;
-// //   jobType: string;
-// //   mode: string;
-// //   organization: string;
-// // }
-
-// // export default function priv() {
-// //   const [jobData, setJobData] = useState<JobItem[]>([]);
-// //   const [loading, setLoading] = useState(true);
-
-// type Job = {
-//   id: number;
-//   company: string;
-//   title: string;
-//   type: string;
-//   location: string;
-//   salary: string;
-//   createdAt?: string; // Optional in case a job doesn't have a createdAt property
-// };
-
-// type Filters = {
-//   location: string[];
-//   jobType: string[];
-//   salary: string[];
-// };
-
-// export default function Component() {
-//   const [selectedFilters, setSelectedFilters] = useState<Filters>({
-//     location: [],
-//     jobType: [],
-//     salary: [],
-//   });
-
-//   const [sortBy, setSortBy] = useState<string>("relevance");
-
-//   const handleFilterChange = (type: keyof Filters, value: string) => {
-//     setSelectedFilters((prevFilters) => ({
-//       ...prevFilters,
-//       [type]: prevFilters[type].includes(value)
-//         ? prevFilters[type].filter((item: string) => item !== value)
-//         : [...prevFilters[type], value],
-//     }));
-//   };
-
-//   const handleSortChange = (value: SetStateAction<string>) => {
-//     setSortBy(value);
-//   };
-
-//   const jobs: Job[] = [
-//     {
-//       id: 1,
-//       company: "Acme Inc.",
-//       title: "Senior Software Engineer - Remote",
-//       type: "Full-time",
-//       location: "Remote",
-//       salary: "100k - 150k",
-//     },
-//     {
-//       id: 2,
-//       company: "Globex Corporation",
-//       title: "Product Manager - Enterprise Solutions",
-//       type: "Full-time",
-//       location: "San Francisco, CA",
-//       salary: "120k - 160k",
-//     },
-//     {
-//       id: 3,
-//       company: "Stark Industries",
-//       title: "UX Designer - Augmented Reality",
-//       type: "Contract",
-//       location: "New York, NY",
-//       salary: "80k - 120k",
-//     },
-//     {
-//       id: 4,
-//       company: "Umbrella Corporation",
-//       title: "Data Science Intern - Bioinformatics",
-//       type: "Internship",
-//       location: "Remote",
-//       salary: "Unpaid",
-//     },
-//   ];
-
-//   const filteredJobs = useMemo(() => {
-//     return jobs
-//       .filter((job) => {
-//         if (
-//           selectedFilters.location.length > 0 &&
-//           !selectedFilters.location.includes(job.location)
-//         ) {
-//           return false;
-//         }
-//         if (
-//           selectedFilters.jobType.length > 0 &&
-//           !selectedFilters.jobType.includes(job.type)
-//         ) {
-//           return false;
-//         }
-//         if (
-//           selectedFilters.salary.length > 0 &&
-//           !selectedFilters.salary.includes(job.salary)
-//         ) {
-//           return false;
-//         }
-//         return true;
-//       })
-//       .sort((a, b) => {
-//         switch (sortBy) {
-//           case "newest":
-//             return (
-//               new Date(b.createdAt || "").getTime() -
-//               new Date(a.createdAt || "").getTime()
-//             );
-//           case "salary":
-//             return (
-//               parseFloat(b.salary.split("-")[0]) -
-//               parseFloat(a.salary.split("-")[0])
-//             );
-//           default:
-//             return 0;
-//         }
-//       });
-//   }, [selectedFilters, sortBy, jobs]);
-
 "use client";
 
 import {
@@ -177,14 +46,21 @@ import {
 import axios from "axios";
 
 type Job = {
-  id: number;
+  id: string;
+  recruiterId: string;
+  description: string;
+  responsibilities: string;
+  requirements: string;
+  experience: string;
+  location: string;
+  jobType: string;
+  mode: string;
   organization: string;
   title: string;
-  jobType: string;
-  location: string;
   salary: string;
   createdAt: Date;
-  description: string;
+  jobPath: string;
+  userDataId?: string;
 };
 type Score = {
   entity_match_score: number;
@@ -216,15 +92,29 @@ export default function Component() {
         : [...prevFilters[type], value],
     }));
   };
-
+  const [recom,setRecom] = useState<any>();
   const handleShowMore = async (job: Job) => {
+    console.log(job)
     setSelectedJob(job);
 
     const res = await axios.post("/api/ai/similarity_score", {
       job_description: job.description,
     });
-    console.log("in jobs ",res.data)
     setScore(res.data.score);
+    const response = await axios.post("/api/ai/recommendation", {
+      description: job.description,
+          responsibilities: job.responsibilities,
+          requirements: job.requirements,
+          experience: job.experience,
+          location: job.location,
+          jobType: job.jobType,
+          mode: job.mode,
+          organization: job.organization,
+          title: job.title,
+          salary: job.salary,
+    });
+    console.log("res: ",res.data)
+    setRecom(res.data.res)
   };
   const handleSortChange = (value: SetStateAction<string>) => {
     setSortBy(value);

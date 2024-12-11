@@ -69,7 +69,7 @@ export async function POST(req: Request) {
 
     await db.recruiter.update({
       where: {
-        id: profile.id,
+        id: user.id,
       },
       data: {
         jobListings: {
