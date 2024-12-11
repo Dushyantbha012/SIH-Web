@@ -20,6 +20,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, Clock, Calendar as CalendarIcon } from "lucide-react";
+import toast from "react-hot-toast";
 
 type Mentor = {
   id: number;
@@ -253,9 +254,12 @@ export function BlueMentorList() {
                       <SelectItem value="15:00">03:00 PM</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={()=>{
+                    toast.success("Meeting confirmed with "+selectedMentor?.name);
+                  }}>
                     Confirm Meeting
                   </Button>
+                  
                 </div>
               </DialogContent>
             </Dialog>

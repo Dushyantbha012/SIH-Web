@@ -11,7 +11,6 @@ import ResumeBuildModal from "@/components/modals/ResumeBuild/resumeBuild";
 import ResumeAnalyse from "@/components/modals/ResumeAnalyse/resumeAnalyse";
 import LoadingProvider from "@/providers/loadingProvider";
 import ToasterProvider from "@/providers/toastProvider";
-import MentorProfileModal from "@/components/modals/Profile/Mentor/recruiterProfileModal";
 export const metadata: Metadata = {
   title: "CareerBridge",
   description: "An AI Powered platform which revolutionizes hiring",
@@ -25,7 +24,7 @@ export default async function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className="font-sans min-h-screen">
+        <body className="font-sans">
           <ToasterProvider/>
           <Header />
           <ProfileModal />
@@ -34,7 +33,6 @@ export default async function RootLayout({
           <RecruiterProfileModal />
           <ResumeBuildModal />
           <ResumeAnalyse />
-          <MentorProfileModal/>
           <LoadingProvider>
             {children}
           </LoadingProvider>

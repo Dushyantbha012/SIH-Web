@@ -44,6 +44,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 type Job = {
   id: string;
@@ -84,6 +85,7 @@ export default function Component() {
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [score, setScore] = useState<Score>();
+  const router = useRouter();
   const handleFilterChange = (type: keyof Filters, value: string) => {
     setSelectedFilters((prevFilters) => ({
       ...prevFilters,
@@ -436,9 +438,14 @@ export default function Component() {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between">
+                    <div className="flex space-x-6">
                     <Button variant="default" size="sm">
                       Apply now
                     </Button>
+                    <Button variant="default" size="sm" onClick={()=>router.push(`/jobs/${job.id}`)}>
+                      View More
+                    </Button>
+                    </div>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
@@ -448,7 +455,7 @@ export default function Component() {
                             handleShowMore(job);
                           }}
                         >
-                          Show More
+                          View Similarity
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[425px]">

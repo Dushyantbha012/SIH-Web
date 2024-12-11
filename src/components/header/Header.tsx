@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
 import { BriefcaseIcon, Menu, X } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,12 +12,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import useMentor from "@/hooks/useMentor"
+import useRecruiter from "@/hooks/useRecruiter"
+import useJobSeeker from "@/hooks/useJobSeeker"
+import { useRouter } from "next/navigation"
 
 export default function Header() {
-  const router = useRouter()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
+  const mentor = useMentor();
+  const recruiter = useRecruiter();
+  const jobSeeker = useJobSeeker();
+  const router = useRouter()
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
@@ -30,16 +35,25 @@ export default function Header() {
   const navItems = [
     { name: "Features", href: "#" },
     { name: "About", href: "#" },
-    {
-      name: "Jobs",
-      dropdown: [
+    { name: "Jobs", dropdown: [
+        { name: "Recommended", href: "/jobs/recommended" },
         { name: "Private", href: "/jobs/private" },
         { name: "Government", href: "/jobs/government" },
       ],
     },
-    { name: "Interview", href: "/interview" },
-    { name: "Cultural Fit", href: "/cultural-fit" },
   ]
+
+  if (!mentor.isMentor) {
+    if (jobSeeker.isJobSeeker) {
+      navItems.push(
+        { name: 'Interview', href: '/interview' },
+        { name: 'Mentor', href: '/mentor' }
+      );
+    }
+    if (recruiter.isRecruiter) {
+      navItems.push({ name: 'Cultural Fit', href: '/cultural-fit' });
+    }
+  }
 
   return (
     <motion.header

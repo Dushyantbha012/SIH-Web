@@ -21,7 +21,21 @@ export default function profile() {
       <div className="flex justify-center items-center mb-6">
         <Profile />
       </div>
-
+      {mentor.isMentor && (
+        <p>
+          Logged in as mentor
+        </p>
+      )}
+      {jobSeeker.isJobSeeker && (
+        <p>
+          Logged in as job seeker
+        </p>
+      )}
+      {recruiter.isRecruiter && (
+        <p>
+          Logged in as recruiter
+        </p>
+      )}
       <div className="flex justify-between items-center">
         <button
           onClick={enterRole.onOpen}
