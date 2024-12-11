@@ -43,7 +43,7 @@ export default function Header() {
 
   return (
     <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 px-4 lg:px-6 py-4 transition-all duration-300 ${isScrolled ? "bg-white shadow-md" : "bg-transparent"
+      className={`fixed top-0 left-0 right-0 z-50 px-4 lg:px-6 py-4 transition-all duration-300 ${isScrolled ? "bg-white shadow-md text-white" : "bg-transparent text-transparent"
         }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -118,6 +118,7 @@ export default function Header() {
               <Button
                 variant={isScrolled ? "default" : "secondary"}
                 onClick={() => router.push("/profile")}
+                className={`${isScrolled ? " text-white" : "bg-transparent text-transparent"}`}
               >
                 Profile
               </Button>
