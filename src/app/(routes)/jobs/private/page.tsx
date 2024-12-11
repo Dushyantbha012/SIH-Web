@@ -228,55 +228,58 @@ export default function Component() {
   const handleSortChange = (value: SetStateAction<string>) => {
     setSortBy(value);
   };
-  const [jobs, setJobs] = useState<Job[]>([
-    {
-      id: 1,
-      organization: "Acme Inc.",
-      title: "Senior Software Engineer - Remote",
-      jobType: "Full-time",
-      location: "Remote",
-      salary: "100k - 150k",
-      createdAt: new Date("2023-01-01"),
-      description:
-        "Acme Inc. is seeking a Senior Software Engineer for a full-time remote position, offering a salary of $100k - $150k. In this role, you will design, develop, and maintain scalable software solutions while collaborating with cross-functional teams, including product managers and engineers. Responsibilities include writing clean code, performing code reviews, and ensuring system performance and scalability. You will also mentor junior engineers and contribute to problem-solving efforts. The ideal candidate has 5+ years of software development experience, proficiency in programming languages such as Java, Python, or JavaScript, and experience with cloud platforms like AWS or Azure. Strong communication and problem-solving skills are essential.",
-    },
-    {
-      id: 2,
-      organization: "Globex Corporation",
-      title: "Product Manager - Enterprise Solutions",
-      jobType: "Full-time",
-      location: "San Francisco, CA",
-      salary: "120k - 160k",
-      createdAt: new Date("2023-01-01"),
-      description: "",
-    },
-    {
-      id: 3,
-      organization: "Stark Industries",
-      title: "UX Designer - Augmented Reality",
-      jobType: "Contract",
-      location: "New York, NY",
-      salary: "80k - 120k",
-      createdAt: new Date("2023-01-01"),
-      description: "",
-    },
-    {
-      id: 4,
-      organization: "Umbrella Corporation",
-      title: "Data Science Intern - Bioinformatics",
-      jobType: "Internship",
-      location: "Remote",
-      salary: "Unpaid",
-      createdAt: new Date("2023-01-01"),
-      description: "",
-    },
-  ]);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  //   [
+  //   {
+  //     id: 1,
+  //     organization: "Acme Inc.",
+  //     title: "Senior Software Engineer - Remote",
+  //     jobType: "Full-time",
+  //     location: "Remote",
+  //     salary: "100k - 150k",
+  //     createdAt: new Date("2023-01-01"),
+  //     description:
+  //       "Acme Inc. is seeking a Senior Software Engineer for a full-time remote position, offering a salary of $100k - $150k. In this role, you will design, develop, and maintain scalable software solutions while collaborating with cross-functional teams, including product managers and engineers. Responsibilities include writing clean code, performing code reviews, and ensuring system performance and scalability. You will also mentor junior engineers and contribute to problem-solving efforts. The ideal candidate has 5+ years of software development experience, proficiency in programming languages such as Java, Python, or JavaScript, and experience with cloud platforms like AWS or Azure. Strong communication and problem-solving skills are essential.",
+  //   },
+  //   {
+  //     id: 2,
+  //     organization: "Globex Corporation",
+  //     title: "Product Manager - Enterprise Solutions",
+  //     jobType: "Full-time",
+  //     location: "San Francisco, CA",
+  //     salary: "120k - 160k",
+  //     createdAt: new Date("2023-01-01"),
+  //     description: "",
+  //   },
+  //   {
+  //     id: 3,
+  //     organization: "Stark Industries",
+  //     title: "UX Designer - Augmented Reality",
+  //     jobType: "Contract",
+  //     location: "New York, NY",
+  //     salary: "80k - 120k",
+  //     createdAt: new Date("2023-01-01"),
+  //     description: "",
+  //   },
+  //   {
+  //     id: 4,
+  //     organization: "Umbrella Corporation",
+  //     title: "Data Science Intern - Bioinformatics",
+  //     jobType: "Internship",
+  //     location: "Remote",
+  //     salary: "Unpaid",
+  //     createdAt: new Date("2023-01-01"),
+  //     description: "",
+  //   },
+  // ]
   useEffect(() => {
     async function fetchJobs() {
       try {
         setLoading(true);
+        // const response = await axios.get<Job[]>("/api/jobs/private"); 
         const response = await axios.get("/api/jobs/private");
-        //setJobs(response.data);
+        console.log(response);
+        setJobs(response.data);
       } catch (error) {
         console.error("Error fetching jobs:", error);
       } finally {
