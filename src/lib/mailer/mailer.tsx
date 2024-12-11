@@ -12,17 +12,15 @@ const transporter = nodemailer.createTransport({
   });
 
 
-export async function sendMail(sender:string,recipient:string, subject:string, text:string, html:any) {
+export function sendMail(sender:string,recipient:string, subject:string, text:string, html:any) {
   
-    const info = await transporter.sendMail({
+    const info = transporter.sendMail({
         from: sender, 
         to: recipient,
         subject: subject, 
         text: text,
         html: html
     });
-
-  console.log("Message sent: %s", info.messageId);
   // Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
 }
 
