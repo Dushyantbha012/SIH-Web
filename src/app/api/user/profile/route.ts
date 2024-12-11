@@ -101,6 +101,7 @@ interface CreateUserRequest {
   education: string;
   path: string[];
   resume: string;
+  email: string;
 }
 
 export async function POST(req: Request, res: NextResponse) {
@@ -110,10 +111,10 @@ export async function POST(req: Request, res: NextResponse) {
     if (!profile) return new NextResponse("Unauthorised", { status: 401 });
     console.log("second");
     const reqData = await req.json();
-    const { name, birthdate, education, path, resume }: CreateUserRequest =
+    const { name, birthdate, education, path, resume , email}: CreateUserRequest =
       await reqData.data;
     console.log("name: ", name);
-    if (!name || !birthdate || !education || !path || !resume) {
+    if (!name || !birthdate || !education || !path || !resume || !email) {
       return new NextResponse("missing fields", { status: 404 });
     }
     console.log("third");
@@ -141,10 +142,12 @@ export async function POST(req: Request, res: NextResponse) {
       // Create new UserData
       userData = await db.userData.create({
         data: {
-          userId : profile.id,
+          userId: profile.id,
           resume,
           qna: {}, // Initialize qna as empty JSON
           complete: false,
+          role: path[0], // Add appropriate default role
+          email, // Assuming profile has an email property
         },
       });
     }

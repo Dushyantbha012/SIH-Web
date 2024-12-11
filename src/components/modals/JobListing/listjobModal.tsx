@@ -11,30 +11,46 @@ import useCreateJob from "@/hooks/useCreateJob";
 import { PiStudentBold } from "react-icons/pi";
 import { IoPersonAddSharp } from "react-icons/io5";
 import { MdOutlineComputer } from "react-icons/md";
-import { FaSitemap } from "react-icons/fa";
+import { FaFileCode, FaSitemap } from "react-icons/fa";
 import { GrCloudComputer } from "react-icons/gr";
 import axios from "axios";
+import { FaMoneyBillTrendUp } from "react-icons/fa6";
+import { IoMdBusiness } from "react-icons/io";
 const jobTypes = [
     {
-        label:"Internship",
+        label: "Internship",
         icon: PiStudentBold
     },
     {
-        label:"Full Time",
+        label: "Full Time",
         icon: IoPersonAddSharp
     }
 ]
-const modedata=[
+const pathItems = [
     {
-        label:"Remote",
+        label: "Software",
+        icon: FaFileCode,
+    },
+    {
+        label: "Marketing",
+        icon: FaMoneyBillTrendUp,
+    },
+    {
+        label: "Business",
+        icon: IoMdBusiness,
+    },
+];
+const modedata = [
+    {
+        label: "Remote",
         icon: MdOutlineComputer
     },
     {
-        label:"On-Site",
+        label: "On-Site",
         icon: FaSitemap
     },
     {
-        label:"Hybrid",
+        label: "Hybrid",
         icon: GrCloudComputer
     },
 ]
@@ -46,16 +62,22 @@ interface listingProps {
     location: string;
     jobType: string;
     mode: string;
+    jobPath: string;
+    salary: string;
+    title :string;
 }
 
 enum STEPS {
-    DESCRIPTION = 0,
-    RESPONSIBILITIES = 1,
-    REQUIREMENTS = 2,
-    EXPERIENCE = 3,
-    LOCATION = 4,
-    JOBTYPE = 5,
-    MODE = 6
+    TITLE = 0,
+    DESCRIPTION = 1,
+    PATH = 2,
+    RESPONSIBILITIES = 3,
+    REQUIREMENTS = 4,
+    EXPERIENCE = 5,
+    SALARY = 6,
+    LOCATION = 7,
+    JOBTYPE = 8,
+    MODE = 9,
 }
 
 const ListJobModal = () => {
@@ -70,21 +92,29 @@ const ListJobModal = () => {
         reset
     } = useForm<listingProps>({
         defaultValues: {
+
             description: "",
+            salary: "",
             responsibilities: "",
             requirements: "",
             experience: "",
             location: "",
             jobType: "",
             mode: "",
+            jobPath: "",
         },
     });
 
     const createJob = useCreateJob();
-    const [isLoading,setIsLoading]=useState(false);
-    const [step, setStep] = useState(STEPS.DESCRIPTION);
+    const [isLoading, setIsLoading] = useState(false);
+    const [step, setStep] = useState(STEPS.TITLE);
     const [jobType, setJobType] = useState("");
     const [mode, setMode] = useState("");
+
+    const [path, setPath] = useState("");
+    const addToPath = (newString: string) => {
+        setPath(newString);
+    };
     const onBack = () => {
         setStep((value) => value - 1);
     };
@@ -98,18 +128,22 @@ const ListJobModal = () => {
             return onNext();
         }
         setIsLoading(true);
-    
-        // Collect all the form data, ensuring the state values for jobType and mode are included
+
+        // Collect all form data, including jobType, mode, and jobPath
         const jobData = {
+            title: data.title,
             description: data.description,
             responsibilities: data.responsibilities,
             requirements: data.requirements,
             experience: data.experience,
             location: data.location,
-            jobType,  
-            mode,     
+            salary: data.salary,
+            jobType: data.jobType || jobType,
+            mode: mode,
+            jobPath: path, // Include jobPath
         };
-    
+        console.log(jobData);
+
         // Check for missing fields
         if (
             !jobData.description ||
@@ -118,15 +152,16 @@ const ListJobModal = () => {
             !jobData.experience ||
             !jobData.location ||
             !jobData.jobType ||
-            !jobData.mode
+            !jobData.mode ||
+            !jobData.jobPath // Ensure jobPath is included in validation
         ) {
             toast.error("Missing fields");
             setIsLoading(false);
             return;
         }
-    
+
         try {
-            const response = await axios.post("/api/addjob", jobData);  // Send the jobData directly
+            const response = await axios.post("/api/addjob", jobData); // Send jobData with jobPath
             toast.success("New Job Posted !!");
             createJob.onClose();
         } catch (error) {
@@ -145,7 +180,7 @@ const ListJobModal = () => {
     }, [step]);
 
     const secondaryActionLabel = useMemo(() => {
-        if (step === STEPS.DESCRIPTION) {
+        if (step === STEPS.TITLE) {
             return undefined;
         }
         return 'Back';
@@ -167,91 +202,166 @@ const ListJobModal = () => {
             />
         </div>
     );
-
+    if (step === STEPS.PATH) {
+        bodyContent = (
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Select Job Path"
+                    subtitle="The job path for this listing"
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
+                    {pathItems.map((item) => (
+                        <div key={item.label} className="col-span-1">
+                            <CategoryInput
+                                onClick={() => addToPath(item.label)}
+                                selected={path === item.label}
+                                label={item.label}
+                                icon={item.icon}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+    if (step === STEPS.TITLE) {
+        bodyContent = (
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Job Title"
+                    subtitle="Enter the title of the job"
+                />
+                <Input
+                    id="title"
+                    label="Job Title"
+                    disabled={isLoading}
+                    register={register}
+                    errors={errors}
+                    required
+                />
+            </div>
+        );
+    }
     if (step === STEPS.RESPONSIBILITIES) {
         bodyContent = (
             <div className="flex flex-col gap-8">
-            <Heading
-                title="Enter responsibilities"
-                subtitle="responsibilities expected"
-            />
-            <Input
-                id="responsibilities"
-                label="Responsibilities"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required
-            />
-        </div>
+                <Heading
+                    title="Enter responsibilities"
+                    subtitle="responsibilities expected"
+                />
+                <Input
+                    id="responsibilities"
+                    label="Responsibilities"
+                    disabled={isLoading}
+                    register={register}
+                    errors={errors}
+                    required
+                />
+            </div>
+        );
+    }
+    if (step === STEPS.RESPONSIBILITIES) {
+        bodyContent = (
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Enter responsibilities"
+                    subtitle="responsibilities expected"
+                />
+                <Input
+                    id="responsibilities"
+                    label="Responsibilities"
+                    disabled={isLoading}
+                    register={register}
+                    errors={errors}
+                    required
+                />
+            </div>
         );
     }
 
     if (step === STEPS.REQUIREMENTS) {
         bodyContent = (
             <div className="flex flex-col gap-8">
-            <Heading
-                title="Enter Requirements"
-                subtitle="Job Requirements"
-            />
-            <Input
-                id="requirements"
-                label="Requirements"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required
-            />
-        </div>
+                <Heading
+                    title="Enter Requirements"
+                    subtitle="Job Requirements"
+                />
+                <Input
+                    id="requirements"
+                    label="Requirements"
+                    disabled={isLoading}
+                    register={register}
+                    errors={errors}
+                    required
+                />
+            </div>
+        );
+    }
+    if (step === STEPS.SALARY) {
+        bodyContent = (
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Enter Salary"
+                    subtitle="Salary"
+                />
+                <Input
+                    id="salary"
+                    label="Salary"
+                    disabled={isLoading}
+                    register={register}
+                    errors={errors}
+                    required
+                />
+            </div>
         );
     }
 
     if (step === STEPS.EXPERIENCE) {
         bodyContent = (
             <div className="flex flex-col gap-8">
-            <Heading
-                title="Enter Experiences"
-                subtitle="Job Experience"
-            />
-            <Input
-                id="experience"
-                label="experiences"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required
-            />
-        </div>
+                <Heading
+                    title="Enter Experiences"
+                    subtitle="Job Experience"
+                />
+                <Input
+                    id="experience"
+                    label="experiences"
+                    disabled={isLoading}
+                    register={register}
+                    errors={errors}
+                    required
+                />
+            </div>
         );
     }
 
     if (step === STEPS.LOCATION) {
         bodyContent = (
             <div className="flex flex-col gap-8">
-            <Heading
-                title="Enter Location"
-                subtitle="Location of job"
-            />
-            <Input
-                id="location"
-                label="Location"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required
-            />
-        </div>
+                <Heading
+                    title="Enter Location"
+                    subtitle="Location of job"
+                />
+                <Input
+                    id="location"
+                    label="Location"
+                    disabled={isLoading}
+                    register={register}
+                    errors={errors}
+                    required
+                />
+            </div>
         );
     }
 
     if (step === STEPS.JOBTYPE) {
         bodyContent = (
             <div className="flex flex-col gap-8">
-            <Heading
-                title="Enter Jobtype"
-                subtitle="Jobtype required"
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
+                <Heading
+                    title="Job Type"
+                    subtitle="Select Type of Job"
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
                     {jobTypes.map((item) => (
                         <div key={item.label} className="col-span-1">
                             <CategoryInput
@@ -263,17 +373,17 @@ const ListJobModal = () => {
                         </div>
                     ))}
                 </div>
-        </div>
+            </div>
         );
     }
     if (step === STEPS.MODE) {
         bodyContent = (
             <div className="flex flex-col gap-8">
-            <Heading
-                title="Enter Mode"
-                subtitle="Mode required"
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
+                <Heading
+                    title="Enter Mode"
+                    subtitle="Mode required"
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
                     {modedata.map((item) => (
                         <div key={item.label} className="col-span-1">
                             <CategoryInput
@@ -285,7 +395,7 @@ const ListJobModal = () => {
                         </div>
                     ))}
                 </div>
-        </div>
+            </div>
         );
     }
 
@@ -296,7 +406,7 @@ const ListJobModal = () => {
             onSubmit={handleSubmit(onSubmit)}
             actionLabel={actionLabel}
             secondaryActionLabel={secondaryActionLabel}
-            secondaryAction={step === STEPS.DESCRIPTION ? undefined : onBack}
+            secondaryAction={step === STEPS.TITLE ? undefined : onBack}
             title="Enter details of new job posting"
             body={bodyContent}
         />

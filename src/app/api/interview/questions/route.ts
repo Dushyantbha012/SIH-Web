@@ -19,7 +19,7 @@ export async function GET() {
                  resume: true
              }
          });
-
+         
          if (!userData || !userData.resume) {
              return NextResponse.json({ error: 'No resume URL found for the user.' }, { status: 400 });
          } 
