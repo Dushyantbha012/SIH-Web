@@ -13,8 +13,10 @@ interface listingProps {
     mode: string;
     jobPath: string;
     salary: string;
-    title : string;
+    title: string;
+    organization: string;
 }
+
 interface InputProps {
     id: keyof listingProps;
     label?: string;

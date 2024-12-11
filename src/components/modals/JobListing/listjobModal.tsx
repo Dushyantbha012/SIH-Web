@@ -26,6 +26,16 @@ const jobTypes = [
         icon: IoPersonAddSharp
     }
 ]
+const organizationData = [
+    {
+        label: "Government",
+        icon: PiStudentBold
+    },
+    {
+        label: "Private",
+        icon: IoPersonAddSharp
+    }
+]
 const pathItems = [
     {
         label: "Software",
@@ -65,6 +75,7 @@ interface listingProps {
     jobPath: string;
     salary: string;
     title :string;
+    organization : string;
 }
 
 enum STEPS {
@@ -78,6 +89,7 @@ enum STEPS {
     LOCATION = 7,
     JOBTYPE = 8,
     MODE = 9,
+    ORGANIZATION = 10
 }
 
 const ListJobModal = () => {
@@ -102,6 +114,7 @@ const ListJobModal = () => {
             jobType: "",
             mode: "",
             jobPath: "",
+            organization: ""
         },
     });
 
@@ -110,10 +123,13 @@ const ListJobModal = () => {
     const [step, setStep] = useState(STEPS.TITLE);
     const [jobType, setJobType] = useState("");
     const [mode, setMode] = useState("");
-
+    const [organization, setOrganization] = useState("");
     const [path, setPath] = useState("");
     const addToPath = (newString: string) => {
         setPath(newString);
+    };
+    const addToOrganization = (newString: string) => {
+        setOrganization(newString);
     };
     const onBack = () => {
         setStep((value) => value - 1);
@@ -140,7 +156,8 @@ const ListJobModal = () => {
             salary: data.salary,
             jobType: data.jobType || jobType,
             mode: mode,
-            jobPath: path, // Include jobPath
+            jobPath: path,
+            organization : organization // Include jobPath
         };
         console.log(jobData);
 
@@ -214,6 +231,28 @@ const ListJobModal = () => {
                         <div key={item.label} className="col-span-1">
                             <CategoryInput
                                 onClick={() => addToPath(item.label)}
+                                selected={path === item.label}
+                                label={item.label}
+                                icon={item.icon}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+    if (step === STEPS.ORGANIZATION) {
+        bodyContent = (
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Select Organization"
+                    subtitle="What's your organization ?"
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
+                    {organizationData.map((item) => (
+                        <div key={item.label} className="col-span-1">
+                            <CategoryInput
+                                onClick={() => addToOrganization(item.label)}
                                 selected={path === item.label}
                                 label={item.label}
                                 icon={item.icon}
@@ -376,6 +415,7 @@ const ListJobModal = () => {
             </div>
         );
     }
+
     if (step === STEPS.MODE) {
         bodyContent = (
             <div className="flex flex-col gap-8">
