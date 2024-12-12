@@ -43,6 +43,7 @@
     "framer-motion": "^11.11.11",
     "input-otp": "^1.2.4",
     "jest": "^29.7.0",
+    "jspdf": "^2.5.2",
     "lucide-react": "^0.428.0",
     "marked": "^15.0.3",
     "next": "^14.2.12",
