@@ -18,7 +18,6 @@ interface JobApplication {
   resume: string;
   location: string;
   apply: boolean;
-  // Add other fields that your job application object might have
 }
 
 // PUT request handler

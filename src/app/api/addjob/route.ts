@@ -15,7 +15,7 @@ title: string;
   location: string;
   jobType: string;
   mode: string;
-  jobPath: string; // Include jobPath
+  jobPath: string; 
   salary: string;
 }
 

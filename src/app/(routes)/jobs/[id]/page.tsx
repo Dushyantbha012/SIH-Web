@@ -9,6 +9,8 @@ import React from "react";
 import { IoLocationSharp } from "react-icons/io5";
 import { SiReacthookform } from "react-icons/si";
 import { MdPerson2 } from "react-icons/md";
+import { Button } from '@/components/ui/button';
+import toast from 'react-hot-toast';
 
 interface JobItem {
   id: string;
@@ -63,6 +65,16 @@ export default function JobPage() {
       fetchRecommendation();
     }
   }, [job]);
+  const handleApply = async (jobId: string) => {
+    toast.promise(axios.put('/api/jobs/apply', {
+      jobId: jobId
+    }), {
+      loading: "Applying...",
+      success: "Application submitted successfully!",
+      error: "Failed to submit application.",
+    });
+
+  }
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -123,6 +135,14 @@ export default function JobPage() {
                     </div>
                     <span className="bg-purple-200 text-purple-700 px-2 py-1 rounded">
                       {job.jobType}
+                    </span>
+                  </li>
+                  <li className="flex items-center justify-between py-2">
+                    
+                    <span className="text-purple-700 px-2 py-1 rounded">
+                      <Button variant="default" size="sm" onClick={() => handleApply(job.id)}>
+                        Apply now
+                      </Button>
                     </span>
                   </li>
                 </ul>

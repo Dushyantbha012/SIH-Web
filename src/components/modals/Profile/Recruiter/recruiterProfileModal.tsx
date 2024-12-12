@@ -32,13 +32,15 @@ interface FormData {
     companyName: string;
     aboutCompany: string;
     organization: string;
+    gstin : string;
 }
 
 enum STEPS {
     NAME = 0,
     COMPANYNAME = 1,
     ABOUT = 2,
-    ORGANIZATION = 3
+    GSTIN = 3,
+    ORGANIZATION = 4,
 }
 
 const RecruiterProfileModal = () => {
@@ -55,6 +57,7 @@ const RecruiterProfileModal = () => {
             companyName: "",
             aboutCompany: "",
             organization: "",
+            gstin: "",
         },
     });
 
@@ -81,7 +84,8 @@ const RecruiterProfileModal = () => {
             name: data.name,
             companyName: data.companyName,
             aboutCompany: data.aboutCompany,
-            organization: organization
+            organization: organization,
+            gstin: data.gstin
         };
         console.log(profileData);
         try {
@@ -166,6 +170,24 @@ const RecruiterProfileModal = () => {
                 <Input
                     id="aboutCompany"
                     label="Company Name"
+                    disabled={isLoading}
+                    register={register}
+                    errors={errors}
+                    required
+                />
+            </div>
+        );
+    }
+    if (step === STEPS.GSTIN) {
+        bodyContent = (
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Enter your GST Number"
+                    subtitle="Enter company's GST Number"
+                />
+                <Input
+                    id="gstin"
+                    label="GST Number"
                     disabled={isLoading}
                     register={register}
                     errors={errors}

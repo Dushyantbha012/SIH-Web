@@ -8,6 +8,7 @@ interface FormData {
     companyName: string;
     aboutCompany: string;
     organization: string;
+    gstin: string;
 }
 
 interface InputProps {

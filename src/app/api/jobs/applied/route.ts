@@ -8,7 +8,7 @@ export async function GET() {
     const userData = await currentUserData();
     const jobs = await db.userApplications.findMany({
         where: {
-          userDataId: userData?.[0]?.userId,
+          userDataId: userData?.[0]?.id,
         },
         include: {
           joblisting: true,

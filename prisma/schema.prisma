@@ -71,13 +71,12 @@ model Joblisting {
 }
 
 model UserApplications {
-  userDataId   String @db.ObjectId
+  id          String   @id @default(uuid()) @map("_id")
+  userDataId  String @db.ObjectId
   joblistingId String @db.ObjectId
 
   userData   UserData   @relation(fields: [userDataId], references: [id])
   joblisting Joblisting @relation(fields: [joblistingId], references: [id])
-
-  id String @id @default(uuid()) @map("_id")
 }
 
 model Mentor {

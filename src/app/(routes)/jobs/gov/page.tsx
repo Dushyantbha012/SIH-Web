@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/dialog";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 type Job = {
   id: string;
@@ -223,7 +224,16 @@ export default function Component() {
         }
       });
   }, [selectedFilters, sortBy, jobs]);
+  const handleApply = async (jobId: string) => {
+    toast.promise(axios.put('/api/jobs/apply', {
+      jobId: jobId
+    }), {
+      loading: "Applying...",
+      success: "Application submitted successfully!",
+      error: "Failed to submit application.",
+    });
 
+  }
   if (loading) {
     return (
       <div className="flex items-center justify-center align-middle">
@@ -439,7 +449,7 @@ export default function Component() {
                   </CardContent>
                   <CardFooter className="flex justify-between">
                     <div className="flex space-x-6">
-                      <Button variant="default" size="sm">
+                      <Button variant="default" size="sm" onClick={() => handleApply(job.id)}>
                         Apply now
                       </Button>
                       <Button variant="default" size="sm" onClick={() => router.push(`/jobs/${job.id}`)}>

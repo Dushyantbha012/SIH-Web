@@ -47,12 +47,21 @@ export default function profile() {
         </button>
 
         {(recruiter.isRecruiter && !mentor.isMentor && !jobSeeker.isJobSeeker ) && (
+          <div>
+
           <button
             onClick={addjob.onOpen}
             className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-bold py-2 px-6 rounded"
           >
             Add Job
           </button>
+          <button
+            onClick={()=>{router.push('/recruiter')}}
+            className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-bold py-2 px-6 rounded"
+          >
+            View Applicants
+          </button>
+          </div>
         )}
         {(!recruiter.isRecruiter && mentor.isMentor && !jobSeeker.isJobSeeker) && (
           <button
@@ -69,6 +78,12 @@ export default function profile() {
               className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-bold py-2 px-6 rounded"
             >
               Resume Builder
+            </button>
+            <button
+              onClick={()=>{router.push('/user/dashboard')}}
+              className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-bold py-2 px-6 rounded"
+            >
+              View Your Applications
             </button>
           </>
         )}
