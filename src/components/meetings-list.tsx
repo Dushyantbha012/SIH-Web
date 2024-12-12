@@ -1,18 +1,47 @@
 'use client'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle, XCircle } from 'lucide-react';
+import axios from 'axios';
 
-import { motion } from 'framer-motion'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { CalendarIcon, UserIcon } from 'lucide-react'
-import { format } from 'date-fns'
 interface Meeting {
-    id: string
-    mentorName: string
-    userName: string
-    mentorId: string
-    dateTime: string
+    id: string;
+    mentorName: string;
+    userName: string;
+    mentorId: string;
+    dateTime: string;
+    purpose: string;
+    duration: string;
+    details: string;
+    accepted: string;
 }
 
-export function MeetingList({ meetings }: { meetings: Meeting[] }) {
+export function MeetingList({ meetingList, setMeetingList }: any) {
+    
+
+    const handleAccept = async (id: string, status: string) => {
+        try {
+            await axios.post('/api/meetings/update', { id, accepted: status });
+            setMeetingList((prev: Meeting[]) =>
+                prev.map((meeting: Meeting) =>
+                    meeting.id === id ? { ...meeting, accepted: status } : meeting
+                )
+            );
+        } catch (error) {
+            console.error('Error updating meeting status:', error);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        try {
+            await axios.post('/api/meetings/delete', { id });
+            setMeetingList((prev: Meeting[]) => prev.filter((meeting: Meeting) => meeting.id !== id));
+        } catch (error) {
+            console.error('Error deleting meeting:', error);
+        }
+    };
+
     return (
         <div>
             <h2 className="text-2xl font-semibold m-8">Your Upcoming Meetings</h2>
@@ -21,7 +50,7 @@ export function MeetingList({ meetings }: { meetings: Meeting[] }) {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
             >
-                {meetings.map((meeting, index) => (
+                {meetingList.map((meeting: Meeting, index: number) => (
                     <motion.div
                         key={meeting.id}
                         initial={{ y: 50, opacity: 0 }}
@@ -30,20 +59,34 @@ export function MeetingList({ meetings }: { meetings: Meeting[] }) {
                     >
                         <Card className="mt-4 ml-8 mr-8">
                             <CardHeader>
-                                <CardTitle className="text-xl">Meeting at : </CardTitle>
+                                <CardTitle>{meeting.mentorName}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="flex items-center mb-2">
-                                    <CalendarIcon className="mr-2" />
-                                    <span>{format(new Date(meeting.dateTime), 'dd/MM/yyyy, hh:mm:ss a')}</span>
-                                </div>
-                                
+                                <p>Purpose: {meeting.purpose}</p>
+                                <p>Duration: {meeting.duration}</p>
+                                <p>Details: {meeting.details}</p>
+                                <p>Accepted: {meeting.accepted}</p>
+                                {meeting.accepted === 'In Progress' ? (
+                                    <div className="flex space-x-4">
+                                        <CheckCircle
+                                            className="text-green-500 cursor-pointer"
+                                            onClick={() => handleAccept(meeting.id, 'yes')}
+                                        />
+                                        <XCircle
+                                            className="text-red-500 cursor-pointer"
+                                            onClick={() => handleDelete(meeting.id)}
+                                        />
+                                    </div>
+                                ) : meeting.accepted === 'yes' ? (
+                                    <p>Accepted</p>
+                                ) : (
+                                    <p>Rejected</p>
+                                )}
                             </CardContent>
                         </Card>
                     </motion.div>
                 ))}
             </motion.div>
         </div>
-    )
+    );
 }
-

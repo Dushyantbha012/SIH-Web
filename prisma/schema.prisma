@@ -98,4 +98,8 @@ model Meetings {
   mentorId   String
   mentor     Mentor   @relation(fields: [mentorId], references: [id])
   dateTime   DateTime
+  purpose    String
+  duration   String
+  details    String
+  accepted   String @default("In Progress")
 }

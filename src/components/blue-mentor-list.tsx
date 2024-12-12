@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,17 +19,15 @@ import {
 } from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Clock, Calendar as CalendarIcon } from "lucide-react";
+import { Search } from "lucide-react";
 import toast from "react-hot-toast";
-import { currentUserData } from "@/lib/profile/currentUserData";
 import axios from "axios";
-import { currentProfile } from "@/lib/profile/currentProfile";
 
 type Mentor = {
   id: number;
   name: string;
   expertise: string;
-  experience:string;
+  experience: string;
   avatar: string;
 };
 
@@ -38,14 +36,43 @@ export function BlueMentorList() {
   const [expertiseFilter, setExpertiseFilter] = useState("all");
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [mentors, setMentors] = useState<Mentor[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
+  const [purpose, setPurpose] = useState("");
+  const [estimatedTime, setEstimatedTime] = useState("");
+  const [details, setDetails] = useState("");
+
   async function fetchMentors() {
     try {
-      const response = await axios.get('/api/mentor/profile');
+      const response = await axios.get("/api/mentor/profile");
       setMentors(response.data);
     } catch (error) {
-      console.error('Error fetching mentors:', error);
+      console.error("Error fetching mentors:", error);
     }
   }
+
+  const scheduleMeet = async () => {
+    if (!selectedMentor || !selectedDateTime || !purpose || !estimatedTime || !details) {
+      toast.error("Please fill all fields.");
+      return;
+    }
+    try {
+      await axios.post("/api/mentor/schedule", {
+        mentorId: selectedMentor.id,
+        dateTime: selectedDateTime.toISOString(),
+        mentorName: selectedMentor.name,
+        purpose,
+        estimatedTime,
+        details,
+      });
+      toast.success("Meeting confirmed with " + selectedMentor.name);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to confirm meeting.");
+    }
+  };
+
   useEffect(() => {
     toast.promise(fetchMentors(), {
       loading: "Loading mentors...",
@@ -53,43 +80,24 @@ export function BlueMentorList() {
       error: "Failed to load mentors",
     });
   }, []);
-  const filteredMentors = mentors.filter(
-    (mentor) =>
-      mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (expertiseFilter === "all" || mentor.expertise === expertiseFilter)
-  );
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string>('');
-  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
-  const scheduleMeet = async () => {
-    if (!selectedMentor || !selectedDateTime) {
-      toast.error("Please select a mentor, date, and time.");
-      return;
-    }
-    try {
-      await axios.post('/api/mentor/schedule', {
-        mentorId: selectedMentor.id,
-        dateTime: selectedDateTime.toISOString(),
-        mentorName : selectedMentor.name
-      });
-      toast.success("Meeting confirmed with " + selectedMentor.name);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to confirm meeting.");
-    }
-  
-  }
   useEffect(() => {
     if (selectedDate && selectedTime) {
       const dateTime = new Date(selectedDate);
-      const [hours, minutes] = selectedTime.split(':');
+      const [hours, minutes] = selectedTime.split(":");
       dateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
       setSelectedDateTime(dateTime);
     } else {
       setSelectedDateTime(null);
     }
   }, [selectedDate, selectedTime]);
+
+  const filteredMentors = mentors.filter(
+    (mentor) =>
+      mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (expertiseFilter === "all" || mentor.expertise === expertiseFilter)
+  );
+
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <h1 className="text-3xl font-light mb-8 text-center text-blue-800">
@@ -115,9 +123,7 @@ export function BlueMentorList() {
             <SelectItem value="Web Development">Web Development</SelectItem>
             <SelectItem value="Data Science">Data Science</SelectItem>
             <SelectItem value="UX Design">UX Design</SelectItem>
-            <SelectItem value="Mobile Development">
-              Mobile Development
-            </SelectItem>
+            <SelectItem value="Mobile Development">Mobile Development</SelectItem>
             <SelectItem value="Machine Learning">Machine Learning</SelectItem>
           </SelectContent>
         </Select>
@@ -143,9 +149,7 @@ export function BlueMentorList() {
                 {mentor.name}
               </h2>
               <p className="text-sm text-blue-600">{mentor.expertise}</p>
-              <p className="text-xs text-blue-400">
-                {mentor.experience} 
-              </p>
+              <p className="text-xs text-blue-400">{mentor.experience}</p>
             </div>
             <Dialog>
               <DialogTrigger asChild>
@@ -174,9 +178,11 @@ export function BlueMentorList() {
                     }}
                     className="rounded-md border border-blue-200"
                   />
-                  <Select onValueChange={(value) => {
-                    setSelectedTime(value);
-                  }}>
+                  <Select
+                    onValueChange={(value) => {
+                      setSelectedTime(value);
+                    }}
+                  >
                     <SelectTrigger className="bg-blue-50 border-blue-200 focus:border-blue-400 focus:ring-blue-400">
                       <SelectValue placeholder="Select time" />
                     </SelectTrigger>
@@ -189,6 +195,24 @@ export function BlueMentorList() {
                       <SelectItem value="15:00">03:00 PM</SelectItem>
                     </SelectContent>
                   </Select>
+                  <Input
+                    placeholder="Purpose of meeting"
+                    value={purpose}
+                    onChange={(e) => setPurpose(e.target.value)}
+                    className="bg-blue-50 border-blue-200 focus:border-blue-400 focus:ring-blue-400"
+                  />
+                  <Input
+                    placeholder="Estimated time (e.g., 30 mins)"
+                    value={estimatedTime}
+                    onChange={(e) => setEstimatedTime(e.target.value)}
+                    className="bg-blue-50 border-blue-200 focus:border-blue-400 focus:ring-blue-400"
+                  />
+                  <Input
+                    placeholder="Details about the issue"
+                    value={details}
+                    onChange={(e) => setDetails(e.target.value)}
+                    className="bg-blue-50 border-blue-200 focus:border-blue-400 focus:ring-blue-400"
+                  />
                   <Button
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     onClick={async () => {
@@ -201,7 +225,6 @@ export function BlueMentorList() {
                   >
                     Confirm Meeting
                   </Button>
-                  
                 </div>
               </DialogContent>
             </Dialog>
