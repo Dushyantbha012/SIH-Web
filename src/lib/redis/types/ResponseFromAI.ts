@@ -34,4 +34,8 @@ export type ResponseFromAi = {
     type:"CHECKPOINTS",payload:{
         courses: Course[];
     }
+} |{
+    type:"SCRAPED_JOB",payload:{
+        jobs:string[];
+    }
 }
