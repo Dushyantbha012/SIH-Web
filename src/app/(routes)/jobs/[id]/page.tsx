@@ -1,16 +1,16 @@
 'use client';
+
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-// import { Sidebar } from 'lucide-react';
-import JobSidebar from "@/components/jobPage/JobSidebar"
-import TaskDashboard from '@/components/jobPage/TaskDashboard';
-import React from "react";
+import { motion } from 'framer-motion';
 import { IoLocationSharp } from "react-icons/io5";
 import { SiReacthookform } from "react-icons/si";
 import { MdPerson2 } from "react-icons/md";
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import toast from 'react-hot-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface JobItem {
   id: string;
@@ -25,7 +25,8 @@ interface JobItem {
   organization: string;
 }
 
-const responseexample = { recommendation: "Finding Recommendations" }
+const responseExample = { recommendation: "Finding Recommendations" };
+
 export default function JobPage() {
   const { id } = useParams();
   const [job, setJob] = useState<JobItem | null>(null);
@@ -50,12 +51,12 @@ export default function JobPage() {
       fetchJob();
     }
   }, [id]);
+
   useEffect(() => {
     const fetchRecommendation = async () => {
       try {
         const response = await axios.post('/api/ai/recommendation', job);
         setRecommendation(response.data.res.recommendation);
-        console.log(response.data.res.recommendation);
       } catch (error) {
         console.error('Error fetching recommendation:', error);
       }
@@ -65,6 +66,7 @@ export default function JobPage() {
       fetchRecommendation();
     }
   }, [job]);
+
   const handleApply = async (jobId: string) => {
     toast.promise(axios.put('/api/jobs/apply', {
       jobId: jobId
@@ -73,155 +75,186 @@ export default function JobPage() {
       success: "Application submitted successfully!",
       error: "Failed to submit application.",
     });
-
   }
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200 p-8">
+        <Skeleton className="w-full h-12 mb-4" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Skeleton className="h-[600px]" />
+          <Skeleton className="h-[600px] md:col-span-2" />
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-100 to-pink-200 flex items-center justify-center">
+        <Card>
+          <CardContent className="p-6">
+            <h1 className="text-2xl font-bold text-red-600 mb-2">Error</h1>
+            <p>{error}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (!job) {
-    return <div>Job not found</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-100 to-orange-200 flex items-center justify-center">
+        <Card>
+          <CardContent className="p-6">
+            <h1 className="text-2xl font-bold text-yellow-600 mb-2">Job Not Found</h1>
+            <p>The requested job could not be found.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
-    <div className='min-h-screen'>
-    <div className="bg-white h-[50px]"></div>
-    <div className='w-full h-full'>
-    <div className="flex h-screen bg-gray-100">
-          <div className='justify-start'> <div>
-            <div className="bg-white w-[300px] p-4 shadow-lg h-screen">
+    <motion.div 
+      className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200 p-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <motion.h1 
+        className="text-4xl font-bold mb-8 text-center text-indigo-800"
+        variants={itemVariants}
+      >
+        Job Details
+      </motion.h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <motion.div variants={itemVariants}>
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle>Job Filters</CardTitle>
+            </CardHeader>
+            <CardContent>
               <ul className="space-y-4">
                 <li className="text-lg font-semibold flex items-center">
-                  <IoLocationSharp className="mr-2" /> Location
+                  <IoLocationSharp className="mr-2 text-indigo-600" /> Location
                 </li>
                 <li className="text-lg font-semibold flex items-center">
-                  <SiReacthookform className="mr-2" /> Type
+                  <SiReacthookform className="mr-2 text-indigo-600" /> Type
                 </li>
                 <li className="text-lg font-semibold flex items-center">
-                  <MdPerson2 className="mr-2" /> JobTitle
+                  <MdPerson2 className="mr-2 text-indigo-600" /> Job Title
                 </li>
               </ul>
-            </div>
-          </div></div>
-          <div className="w-4/6">
-            <div className="flex-1 p-6">
-              <h1 className="text-3xl font-bold mb-4">Job Details</h1>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-              <div className="mb-6">
-                <ul>
-                  <li className="flex items-center justify-between py-2">
-                    <div className="flex items-center font-semibold">
-                      Company
-                    </div>
-                    <span className="bg-purple-200 text-purple-700 px-2 py-1 rounded">
-                      Private
-                    </span>
-                  </li>
-                  <li className="flex items-center justify-between py-2">
-                    <div className="flex items-center font-semibold">
-                      Location
-                    </div>
-                    <span className="bg-purple-200 text-purple-700 px-2 py-1 rounded">
-                      {job.location}
-                    </span>
-                  </li>
-                  <li className="flex items-center justify-between py-2">
-                    <div className="flex items-center font-semibold">
-                      Type
-                    </div>
-                    <span className="bg-purple-200 text-purple-700 px-2 py-1 rounded">
-                      {job.jobType}
-                    </span>
-                  </li>
-                  <li className="flex items-center justify-between py-2">
-                    
-                    <span className="text-purple-700 px-2 py-1 rounded">
-                      <Button variant="default" size="sm" onClick={() => handleApply(job.id)}>
-                        Apply now
-                      </Button>
-                    </span>
-                  </li>
-                </ul>
+        <motion.div variants={itemVariants} className="md:col-span-2">
+          <Card className="h-full">
+            <CardContent className="p-6">
+              <ul className="space-y-4">
+                <li className="flex items-center justify-between py-2">
+                  <div className="font-semibold">Company</div>
+                  <span className="bg-indigo-200 text-indigo-700 px-3 py-1 rounded-full">
+                    {job.organization}
+                  </span>
+                </li>
+                <li className="flex items-center justify-between py-2">
+                  <div className="font-semibold">Location</div>
+                  <span className="bg-indigo-200 text-indigo-700 px-3 py-1 rounded-full">
+                    {job.location}
+                  </span>
+                </li>
+                <li className="flex items-center justify-between py-2">
+                  <div className="font-semibold">Type</div>
+                  <span className="bg-indigo-200 text-indigo-700 px-3 py-1 rounded-full">
+                    {job.jobType}
+                  </span>
+                </li>
+                <li className="flex items-center justify-between py-2">
+                  <div className="font-semibold">Mode</div>
+                  <span className="bg-indigo-200 text-indigo-700 px-3 py-1 rounded-full">
+                    {job.mode}
+                  </span>
+                </li>
+                <li className="flex items-center justify-between py-2">
+                  <div className="font-semibold">Experience</div>
+                  <span className="bg-indigo-200 text-indigo-700 px-3 py-1 rounded-full">
+                    {job.experience}
+                  </span>
+                </li>
+              </ul>
+
+              <div className="mt-6">
+                <h2 className="text-xl font-bold mb-2">Description</h2>
+                <p className="text-gray-700">{job.description}</p>
               </div>
 
-              {/* <div className="mt-8">
-                <h2 className="text-xl font-semibold">Similarity Score</h2>
-                <div className="space-y-4 mt-4">
-                  <div className="p-4 bg-blue-100 rounded shadow">
-                    <div className="flex justify-between">
-                      <h3 className="font-bold">Skills Match</h3>
-                      <span className="bg-blue-200 text-blue-700 px-2 py-1 rounded">
-                        20 points
-                      </span>
-                    </div>
-                    <p className="mb-2">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Commodi, sit? Lorem, ipsum dolor sit amet consectetur
-                      adipisicing elit. Itaque corrupti autem quibusdam hic
-                      perferendis vero maiores ratione excepturi praesentium ipsam.
-                    </p>
-                  </div>
-                  <div className="p-4 bg-blue-100 rounded shadow">
-                    <div className="flex justify-between">
-                      <h3 className="font-bold">Experience</h3>
-                      <span className="bg-blue-200 text-blue-700 px-2 py-1 rounded">
-                        25 points
-                      </span>
-                    </div>
-                    <p className="mb-2">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Commodi, sit? Lorem, ipsum dolor sit amet consectetur
-                      adipisicing sdam hic
-                      perferendis vero maiores ratione excepturi praesentium ipsam.
-                    </p>
-                  </div>
-                  <div className="p-4 bg-blue-100 rounded shadow">
-                    <div className="flex justify-between">
-                      <h3 className="font-bold">Education</h3>
-                      <span className="bg-blue-200 text-blue-700 px-2 py-1 rounded">
-                        10 points
-                      </span>
-                    </div>
-                    <p className="mb-2">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Compti autem quibusdam hic
-                      perferendis vero maiores ratione excepturi praesentium ipsam.
-                    </p>
-                  </div>
-                  <div className="p-4 bg-blue-100 rounded shadow">
-                    <div className="flex justify-between">
-                      <h3 className="font-bold">Accomplishments</h3>
-                      <span className="bg-blue-200 text-blue-700 px-2 py-1 rounded">
-                        10 points
-                      </span>
-                    </div>
-                    <p className="mb-2">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      adipisicing el excepturi praesentium ipsam.
-                    </p>
-                  </div>
-                </div>
-              </div> */}
-              {!recommendation && (
-                <div>
-                  {responseexample.recommendation}
-                 </div>)}
-              {!loading && (
-                <div>
-                  {recommendation}
-                </div>
-              )}
-            </div>
-          </div>
-    </div>
-    </div>
-    </div>
-  );
-    
+              <div className="mt-6">
+                <h2 className="text-xl font-bold mb-2">Responsibilities</h2>
+                <p className="text-gray-700">{job.responsibilities}</p>
+              </div>
 
-  
+              <div className="mt-6">
+                <h2 className="text-xl font-bold mb-2">Requirements</h2>
+                <p className="text-gray-700">{job.requirements}</p>
+              </div>
+
+              <motion.div 
+                className="mt-8 flex justify-center items-center"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button 
+                  variant="default" 
+                  size="lg" 
+                  onClick={() => handleApply(job.id)}
+                  className="w-1/3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
+                >
+                  Apply Now
+                </Button>
+              </motion.div>
+
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      <motion.div variants={itemVariants} className="mt-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>AI Recommendation</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!recommendation ? (
+              <p>{responseExample.recommendation}</p>
+            ) : (
+              <p>{recommendation}</p>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  );
 }
+
