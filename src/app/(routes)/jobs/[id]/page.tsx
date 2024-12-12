@@ -135,7 +135,7 @@ export default function JobPage() {
 
   return (
     <motion.div 
-      className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200 p-8"
+      className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200 p-8 pt-20"
       initial="hidden"
       animate="visible"
       variants={containerVariants}

@@ -119,7 +119,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className="bg-card py-12 md:py-24 lg:py-32 bg-muted">
+        <section className=" py-12 md:py-24 lg:py-32 bg-muted">
           <div className="container px-4 md:px-6 grid md:grid-cols-2 gap-8 items-center">
             <div className="order-2 md:order-1 space-y-4">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
@@ -166,7 +166,7 @@ export default function LandingPage() {
               workflows.
             </p>
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="p-6 rounded-lg shadow-lg bg-card bg-gradient-to-r from-cyan-200 to-blue-200">
+              <Card className="p-6 rounded-lg shadow-lg bg-card bg-gradient-to-r from-blue-200 to-purple-200">
                 <CardHeader>
                   <CardTitle>Applicant Tracking Systems</CardTitle>
                   <CardDescription>
@@ -189,7 +189,7 @@ export default function LandingPage() {
                   <hr className="my-4 bg-transparent border-transparent" />
                 </CardContent>
               </Card>
-              <Card className="p-6 rounded-lg shadow-lg bg-card bg-gradient-to-r from-cyan-200 to-blue-200">
+              <Card className="p-6 rounded-lg shadow-lg bg-card bg-gradient-to-r from-blue-200 to-blue-500">
                 <CardHeader>
                   <CardTitle>HRIS Systems</CardTitle>
                   <CardDescription>

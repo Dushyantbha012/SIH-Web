@@ -1,7 +1,10 @@
 'use client';
+
 import { useCallback, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { IoMdClose } from "react-icons/io";
 import Button from "./ModalInputs/Button";
+
 interface ModalProps {
     isOpen?: boolean;
     onClose: () => void;
@@ -13,7 +16,6 @@ interface ModalProps {
     disabled?: boolean;
     secondaryAction?: () => void;
     secondaryActionLabel?: string;
-
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -29,14 +31,13 @@ const Modal: React.FC<ModalProps> = ({
     secondaryActionLabel
 }) => {
     const [showModal, setShowModal] = useState(isOpen);
+
     useEffect(() => {
         setShowModal(isOpen);
     }, [isOpen]);
-    const handleClose = useCallback(() => {
-        if (disabled) {
-            return;
-        }
 
+    const handleClose = useCallback(() => {
+        if (disabled) return;
         setShowModal(false);
         setTimeout(() => {
             onClose();
@@ -44,60 +45,75 @@ const Modal: React.FC<ModalProps> = ({
     }, [disabled, onClose]);
 
     const handleSubmit = useCallback(() => {
-        if (disabled) {
-            return;
-        }
+        if (disabled) return;
         onSubmit();
-
     }, [disabled, onSubmit]);
 
     const handleSecondaryAction = useCallback(() => {
-        if (disabled || !secondaryAction) {
-            return;
-        }
+        if (disabled || !secondaryAction) return;
         secondaryAction();
     }, [disabled, secondaryAction]);
 
-    if (!isOpen) {
-        return null;
-    }
+    if (!isOpen) return null;
+
     return (
-        <>
-            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none bg-neutral-800/70">
-
-
-                <div className="relative w-full md:w-4/6 lg:w-3/6 xl:w-2/5 my-6 mx-auto h-full lg:h-auto md:h-auto">
-                    {/* Content */}
-                    <div className={`translate duration-300 h-full ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'}`}>
-                        <div className="translate h-full lg:h-auto md:h-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                            <div className="flex items-center p-6 rounded-t justify-center relative border-b-[1px]">
-                                <button onClick={handleClose} className="p-1 border-0 hover:opacity-70 transition absolute left-9"> <IoMdClose size={18} /> </button>
-                                <div className="text-lg  font-semibold">
-                                    {title}
+        <AnimatePresence>
+            {showModal && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none bg-black bg-opacity-60 backdrop-blur-sm"
+                >
+                    <motion.div
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.95, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="relative w-full md:w-4/6 lg:w-3/6 xl:w-2/5 my-6 mx-auto h-full lg:h-auto md:h-auto"
+                    >
+                        <div className="h-full lg:h-auto md:h-auto">
+                            <div className="relative flex flex-col w-full bg-gradient-to-br from-blue-500 to-blue-700 shadow-2xl rounded-2xl">
+                                <div className="flex items-center p-6 rounded-t-2xl justify-center relative border-b-[1px] border-blue-400">
+                                    <button
+                                        onClick={handleClose}
+                                        className="absolute left-4 p-2 transition-colors duration-200 rounded-full text-white hover:bg-blue-600 focus:outline-none"
+                                    >
+                                        <IoMdClose size={20} />
+                                    </button>
+                                    <h2 className="text-2xl font-bold text-white">{title}</h2>
                                 </div>
-                            </div>
-                            {/* Body */}
-                            <div className="relative p-6 flex-auto">{body} </div>
-                            {/* footer */}
-                            <div className="flex flex-col gap-2 p-6">
-                                <div className="flex flex-row items-center gap-4 w-full">
-                                    {secondaryAction && secondaryActionLabel && (
-
-                                        <Button outline disabled={disabled} label={secondaryActionLabel} onClick={handleSecondaryAction} />
-
-                                    )}
-                                    {actionLabel && <Button disabled={disabled} label={actionLabel} onClick={handleSubmit} />}
-                                    
+                                <div className="relative p-6 bg-white rounded-b-2xl">
+                                    <div className="mb-6">{body}</div>
+                                    <div className="flex flex-col gap-4">
+                                        <div className="flex flex-row items-center gap-4 w-full">
+                                            {secondaryAction && secondaryActionLabel && (
+                                                <Button
+                                                    outline
+                                                    disabled={disabled}
+                                                    label={secondaryActionLabel}
+                                                    onClick={handleSecondaryAction}
+                                                />
+                                            )}
+                                            {actionLabel && (
+                                                <Button
+                                                    disabled={disabled}
+                                                    label={actionLabel}
+                                                    onClick={handleSubmit}
+                                                />
+                                            )}
+                                        </div>
+                                        {footer}
+                                    </div>
                                 </div>
-                                {footer}
                             </div>
                         </div>
-                    </div>
-
-                </div>
-            </div>
-        </>
-    )
-}
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+};
 
 export default Modal;
+

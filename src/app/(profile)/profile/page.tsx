@@ -122,7 +122,7 @@ export default function ProfilePage() {
               >
                 <ActionButton
                   icon={<UserIcon />}
-                  label="Profile Builder"
+                  label="Select Profile"
                   onClick={enterRole.onOpen}
                 />
                 {recruiter.isRecruiter && (
