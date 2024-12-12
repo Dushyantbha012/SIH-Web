@@ -92,7 +92,7 @@ export function BlueMentorList() {
   }, [selectedDate, selectedTime]);
   return (
     <div className="container mx-auto p-4 max-w-4xl">
-      <h1 className="text-3xl font-light mb-8 text-center text-blue-800">
+      <h1 className="text-3xl font-light m-8 mt-20 text-center text-blue-800">
         Find Your Mentor
       </h1>
 
