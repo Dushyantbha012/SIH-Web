@@ -96,6 +96,8 @@ import { NextResponse } from "next/server";
 import { initialProfile } from "@/lib/profile/initialProfile";
 import { RedisManager } from "@/lib/redis/RedisManagerSimilarity";
 import { GET_SIMILARITY_SCORE } from "@/lib/redis/types";
+import { currentProfile } from "@/lib/profile/currentProfile";
+import { currentUserData } from "@/lib/profile/currentUserData";
 
 interface CreateUserRequest {
   name: string;
@@ -181,6 +183,32 @@ export async function POST(req: Request, res: NextResponse) {
     return NextResponse.json({user: updatedUser, userData}, {status: 200});
   } catch (error) {
     console.log("USER_PROFILE \n", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+
+export async function GET() {
+  try {
+    const userData = await currentUserData();
+
+    if (!userData || userData.length === 0) {
+      return NextResponse.json({ error: 'User not found' }, { status: 500 });
+    }
+
+    const userId = userData[0].userId;
+
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      include: { UserData: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found in database' }, { status: 404 });
+    }
+
+    return NextResponse.json({ user, userData }, { status: 200 });
+  } catch (error) {
+    console.log("GET_USER_ERROR", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
