@@ -2,6 +2,7 @@ import {
   GET_CHECKPOINTS,
   GET_CULTURAL_FIT,
   GET_INTERVIEW_ANALYSIS,
+  GET_JOBS_SCRAPED,
   GET_QUESTIONS,
   GET_RECOMMENDATION,
   GET_RESUME_BUILD,
@@ -62,5 +63,13 @@ export type MessagesToAI =
       data:{
         currentStatus:string;
         endGoal:string;
+      }
+    } |{
+      type: typeof GET_JOBS_SCRAPED;
+      data:{
+        jobType:"internship"|"private"|"government";
+        role:string;
+        location:string;
+        years:string;
       }
     }

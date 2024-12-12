@@ -82,6 +82,7 @@ export default function Component() {
     jobType: [],
     salary: [],
   });
+  const [maxScore,setMaxScore]=useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
@@ -104,6 +105,24 @@ export default function Component() {
       job_description: job.description,
     });
     setScore(res.data.score);
+    var m = -1;
+    if(score){
+      if(score.entity_match_score>m){
+        m=score.entity_match_score;
+      }
+      if(score.final_comprehensive_score>m){
+        m=score.final_comprehensive_score;
+      }
+      if(score.keyword_match_score>m){
+        m=score.keyword_match_score;
+      }
+      if(score.semantic_similarity>m){
+        m=score.semantic_similarity
+      }
+      setMaxScore(m);
+      console.log("max score is ", m)
+    }
+
   };
   const handleSortChange = (value: SetStateAction<string>) => {
     setSortBy(value);
@@ -477,38 +496,13 @@ export default function Component() {
                           </div>
                           <Separator />
                           <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">Entity Match</Label>
+                            <Label className="text-right">Percentage of match of Job with Profile: </Label>
+                            
                             <div className="col-span-3">
-                              {score
-                                ? score.entity_match_score.toFixed(3)
-                                : "N/A"}
+                              {maxScore?maxScore>0.4?"90 % ":`${((maxScore/0.45)*100).toFixed(2)} % `:"Fetching"}
                             </div>
                           </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">Keyword Match</Label>
-                            <div className="col-span-3">
-                              {score
-                                ? score.keyword_match_score.toFixed(3)
-                                : "N/A"}
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">
-                              Semantic Similarity
-                            </Label>
-                            <div className="col-span-3">
-                              {score?.semantic_similarity.toFixed(3) ?? "N/A"}
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">
-                              Comprehensive Score
-                            </Label>
-                            <div className="col-span-3">
-                              {score?.final_comprehensive_score.toFixed(3) ??
-                                "N/A"}
-                            </div>
-                          </div>
+                         
                         </div>
                       </DialogContent>
                     </Dialog>
