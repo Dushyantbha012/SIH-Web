@@ -186,7 +186,7 @@ export default function LandingPage() {
                     <CheckIcon className="h-5 w-5 text-primary" />
                     <span>Improved candidate experience</span>
                   </div>
-                  <hr className="my-4 border-muted" />
+                  <hr className="my-4 bg-transparent border-transparent" />
                 </CardContent>
               </Card>
               <Card className="p-6 rounded-lg shadow-lg bg-card bg-gradient-to-r from-cyan-200 to-blue-200">

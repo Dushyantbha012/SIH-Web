@@ -15,6 +15,7 @@ import Modal from "../modal";
 import ReactMarkdown from "react-markdown";
 import { is } from "date-fns/locale";
 import axios from "axios";
+import { marked } from 'marked';
 const markdownContent = `
 **Arnav Bansal**
 **AI Engineer & Data Science Enthusiast**
@@ -101,21 +102,7 @@ const educationItems = [
 ];
 
 interface FormData {
-  fullName: string;
-  email: string;
-  contact: string;
-  education: string;
-  experience: string;
-  skills: string;
-}
-
-enum STEPS {
-  NAME = 0,
-  EMAIL = 1,
-  CONTACT = 2,
-  EDUCATION = 3,
-  EXPERIENCE = 4,
-  SKILLS = 5,
+  jobDescription : string;
 }
 
 const ResumeBuildModal = () => {
@@ -126,91 +113,53 @@ const ResumeBuildModal = () => {
     reset,
   } = useForm<FormData>({
     defaultValues: {
-      fullName: "",
-      email: "",
-      contact: "",
-      education: "",
-      experience: "",
-      skills: "",
+      jobDescription:""
     },
   });
 
-  const resumeBuild = useResumeBuild();
-  const [step, setStep] = useState(STEPS.NAME);
+  const resumeBuild = useResumeBuild()
   const [isLoading, setIsLoading] = useState(false);
-  const [fullName, setFullName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [contact, setContact] = useState<string>("");
-  const [education, setEducation] = useState<string>("");
-  const [experience, setExperience] = useState<string>("");
-  const [skills, setSkills] = useState<string>("");
   const [isMarkdownView, setIsMarkdownView] = useState(false);
-  const job_description = "AI Engineer & Data Science Enthusiast";
-  const onBack = () => {
-    setStep((value) => value - 1);
-  };
-
-  const onNext = () => {
-    setStep((value) => value + 1);
-  };
+  const [resume,setResume]=useState("")
+  const [resumeHtml, setResumeHtml] = useState("");
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    if (step !== STEPS.SKILLS) {
-      return onNext();
-    }
-
     setIsLoading(true);
-    const profileData = {
-      fullName: fullName,
-      email: email,
-      contact: contact,
-      education: education,
-      experience: experience,
-      skills: skills,
-    };
     setIsMarkdownView(true);
-    const res = await axios.post("/api/ai/resume_build", {
-      fullName,
-      email,
-      contact,
-      education,
-      experience,
-      skills,
-      job_description,
-    });
-    setIsLoading(false);
+    
+    try {
+      const res = await axios.post("/api/ai/resume_build", {
+        job_description: data.jobDescription,
+      });
+      setResume(res.data.resume)
+    } catch (error) {
+      console.error("Error fetching resume:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const actionLabel = useMemo(() => {
     if (isMarkdownView) {
       return "Close";
     }
-    if (step === STEPS.SKILLS) {
-      return "Create";
-    }
-    return "Next";
-  }, [step, isMarkdownView]);
+    
+    return "Create";
+  }, [isMarkdownView]);
 
-  const handleModalAction = () => {
-    if (isMarkdownView) {
-      resumeBuild.onClose(); // Close modal when in markdown view
-    } else {
-      handleSubmit(onSubmit)(); // Handle form submission
-    }
-  };
   const secondaryActionLabel = useMemo(() => {
-    if (step === STEPS.NAME || isMarkdownView) {
+    if (isMarkdownView) {
       return undefined;
     }
-    return "Back";
-  }, [step, isMarkdownView]);
+    
+  }, [isMarkdownView]);
 
   let bodyContent = (
     <div className="flex flex-col gap-8">
-      <Heading title="Enter your name" subtitle="Enter your name" />
+      <Heading title="Enter your job description" subtitle="Enter job description" />
       <Input
-        id="fullName"
-        label="Your Full Name"
+        id="jobDescription"
+        label="Job Description"
         disabled={isLoading}
         register={register}
         errors={errors}
@@ -218,101 +167,16 @@ const ResumeBuildModal = () => {
       />
     </div>
   );
-
-  if (step === STEPS.CONTACT) {
-    bodyContent = (
-      <div className="flex flex-col gap-8">
-        <Heading
-          title="Enter your contact details"
-          subtitle="Enter your contact details"
-        />
-        <Input
-          id="contact"
-          label="Contact"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-      </div>
-    );
+  if(isMarkdownView){
+    bodyContent=
+       (
+        <div className="max-h-[500px] overflow-auto p-4 bg-gray-100 rounded-md">
+          <ReactMarkdown>{resume}</ReactMarkdown>
+        </div>
+      )
+      
+    
   }
-
-  if (step === STEPS.EDUCATION) {
-    bodyContent = (
-      <div className="flex flex-col gap-8">
-        <Heading
-          title="Enter your education"
-          subtitle="The education you pursued"
-        />
-        <Input
-          id="education"
-          label="Education"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-      </div>
-    );
-  }
-  if (step === STEPS.EMAIL) {
-    bodyContent = (
-      <div className="flex flex-col gap-8">
-        <Heading title="Enter your email" subtitle="Your email address" />
-        <Input
-          id="email"
-          label="Email"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-      </div>
-    );
-  }
-  if (step === STEPS.EXPERIENCE) {
-    bodyContent = (
-      <div className="flex flex-col gap-8">
-        <Heading
-          title="Enter your experience"
-          subtitle="Your career exprience"
-        />
-        <Input
-          id="experience"
-          label="Experience"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-      </div>
-    );
-  }
-  if (step === STEPS.SKILLS) {
-    bodyContent = (
-      <div className="flex flex-col gap-8">
-        <Heading title="Enter your skills" subtitle="Your expertise" />
-        <Input
-          id="skills"
-          label="Skills"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-      </div>
-    );
-  }
-
-  if (isMarkdownView) {
-    bodyContent = (
-      <div className="max-h-[500px] overflow-auto p-4 bg-gray-100 rounded-md">
-        <ReactMarkdown>{markdownContent}</ReactMarkdown>
-      </div>
-    );
-  }
-
   return (
     <Modal
       isOpen={resumeBuild.isOpen}
@@ -320,7 +184,6 @@ const ResumeBuildModal = () => {
       onSubmit={handleSubmit(onSubmit)}
       actionLabel={actionLabel}
       secondaryActionLabel={secondaryActionLabel}
-      secondaryAction={step === STEPS.NAME ? undefined : onBack}
       title="Welcome! Create your resume"
       body={bodyContent}
     />
