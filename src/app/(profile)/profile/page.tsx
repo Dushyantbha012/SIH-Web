@@ -13,6 +13,8 @@ import useMentor from "@/hooks/useMentor";
 import useRecruiter from "@/hooks/useRecruiter";
 import useResumeAnalyse from "@/hooks/useResumeAnalyse";
 import useResumeBuild from "@/hooks/useResumeBuild";
+import { useEffect, useState } from "react";
+import axios from 'axios';
 
 export default function ProfilePage() {
   const enterRole = useEnterRole();
@@ -41,6 +43,26 @@ export default function ProfilePage() {
       opacity: 1
     }
   };
+  const [res,setRes]=useState<any>();
+  const [name, setName] = useState('');
+  const [role, setRole] = useState('');
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get('/api/user/profile');
+        const data = response.data;
+        setRes(data);
+        setName(data.user.name);
+        if (data.userData && data.userData.length > 0) {
+          setRole(data.userData[0].role);
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+  
+    fetchUserProfile();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
@@ -54,7 +76,7 @@ export default function ProfilePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                John Doe
+                {res?.user?.name?res.user.name:"NAME"}
               </motion.h1>
               <motion.p 
                 className="text-xl md:text-2xl"
@@ -62,7 +84,7 @@ export default function ProfilePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                Software Engineer
+                {res?.userData[0]?.role?res.userData[0].role:"PATH"}
               </motion.p>
             </div>
             <motion.div
@@ -90,31 +112,6 @@ export default function ProfilePage() {
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="actions">Actions</TabsTrigger>
             </TabsList>
-            <TabsContent value="profile">
-              <motion.div variants={itemVariants} className="grid md:grid-cols-2 gap-8">
-                <ProfileSection title="Personal Information">
-                  <InfoItem icon={<CalendarIcon />} text="June 15, 1990" />
-                  <InfoItem icon={<MailIcon />} text="john.doe@example.com" />
-                  <InfoItem icon={<PhoneIcon />} text="+1 (555) 123-4567" />
-                </ProfileSection>
-                <ProfileSection title="Education">
-                  <InfoItem icon={<SchoolIcon />} text="Bachelor of Science in Computer Science" />
-                  <InfoItem icon={<GraduationCapIcon />} text="University of California, Berkeley" />
-                  <InfoItem icon={<CalendarIcon />} text="Graduated in 2012" />
-                </ProfileSection>
-                <ProfileSection title="Career Path">
-                  <InfoItem icon={<BriefcaseIcon />} text="Software Engineer, Acme Inc." />
-                  <InfoItem icon={<CalendarIcon />} text="2012 - 2016" />
-                  <InfoItem icon={<BriefcaseIcon />} text="AI Researcher, Vercel" />
-                  <InfoItem icon={<CalendarIcon />} text="2016 - Present" />
-                </ProfileSection>
-                <ProfileSection title="Skills">
-                  <InfoItem icon={<CodeIcon />} text="JavaScript, React, Node.js" />
-                  <InfoItem icon={<DatabaseIcon />} text="SQL, MongoDB" />
-                  <InfoItem icon={<CloudIcon />} text="AWS, Docker, Kubernetes" />
-                </ProfileSection>
-              </motion.div>
-            </TabsContent>
             <TabsContent value="actions">
               <motion.div 
                 variants={itemVariants} 
