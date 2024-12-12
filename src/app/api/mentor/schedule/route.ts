@@ -20,10 +20,24 @@ export async function POST(req: NextRequest) {
                 purpose,
                 duration: estimatedTime,
                 details,
-                accepted: "In Progress"
+                accepted: "In Progress",
             },
         });
-
+        let prevm =  await db.mentor.findUnique({where:{
+            id: mentorId
+        }});
+        if(prevm){
+            let m = await db.mentor.update({
+                where:{
+                    id: mentorId
+                },
+                data: {
+                    totalMeetings: prevm?.totalMeetings+1
+                },
+            });
+        }else{
+            return NextResponse.json({ error: 'Mentor Not found' }, { status: 420 });
+        }
         return NextResponse.json({ message: 'Meeting confirmed', meeting: newMeeting });
     } catch (error) {
         console.error('Error scheduling meeting:', error);

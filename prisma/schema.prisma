@@ -90,6 +90,9 @@ model Mentor {
   email          String
   skills         String
   schedule       Meetings[]
+  totalMeetings  Int @default(0)
+  acceptedMeetings Int @default(0)
+  deniedMeetings Int @default(0)
 }
 
 model Meetings {
