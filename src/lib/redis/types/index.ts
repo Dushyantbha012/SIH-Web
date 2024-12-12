@@ -4,7 +4,7 @@ export const GET_SIMILARITY_SCORE = 'GET_SIMILARITY_SCORE';
 export const GET_INTERVIEW_ANALYSIS = 'GET_INTERVIEW_ANALYSIS';
 export const GET_QUESTIONS = 'GET_QUESTIONS';
 export const GET_CULTURAL_FIT = 'GET_CULTURAL_FIT';
-
+export const GET_CHECKPOINTS = 'GET_CHECKPOINTS';
 export type Score = {
     entity_match_score: number;
     final_comprehensive_score: number;
@@ -31,4 +31,9 @@ export type  Emotion ={
 export type CulturalAnalysisResult ={
   emotions: Emotion[][];
   result: string;
+}
+
+export type Course = {
+  courseName:string;
+  courseLink:string;
 }

@@ -1,4 +1,5 @@
 import {
+  GET_CHECKPOINTS,
   GET_CULTURAL_FIT,
   GET_INTERVIEW_ANALYSIS,
   GET_QUESTIONS,
@@ -56,4 +57,10 @@ export type MessagesToAI =
       data: {
         audio_url: string;
       };
-    };
+    }|{
+      type: typeof GET_CHECKPOINTS;
+      data:{
+        currentStatus:string;
+        endGoal:string;
+      }
+    }
