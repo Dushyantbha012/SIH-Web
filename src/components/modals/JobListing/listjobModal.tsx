@@ -140,7 +140,7 @@ const ListJobModal = () => {
     };
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-        if (step !== STEPS.MODE) {
+        if (step !== STEPS.ORGANIZATION) {
             return onNext();
         }
         setIsLoading(true);
@@ -176,21 +176,28 @@ const ListJobModal = () => {
             setIsLoading(false);
             return;
         }
-
-        try {
-            const response = await axios.post("/api/addjob", jobData); // Send jobData with jobPath
-            toast.success("New Job Posted !!");
-            createJob.onClose();
-        } catch (error) {
-            toast.error("Something Went Wrong !!");
-            console.error("Error while creating job:", error);
-        } finally {
-            setIsLoading(false);
+        const handleCreation = async () => {
+            try {
+                const response = await axios.post("/api/addjob", jobData); // Send jobData with jobPath
+                toast.success("New Job Posted !!");
+                createJob.onClose();
+            } catch (error) {
+                toast.error("Something Went Wrong !!");
+                console.error("Error while creating job:", error);
+            } finally {
+                setIsLoading(false);
+            }
         }
+        toast.promise(handleCreation(),{
+            loading : "Creating Job..",
+            success: "Job Created Successfully!",
+            error: "Failed to submit application.",
+        }
+        )
     };
 
     const actionLabel = useMemo(() => {
-        if (step === STEPS.MODE) {
+        if (step === STEPS.ORGANIZATION) {
             return 'Create';
         }
         return 'Next';
@@ -253,7 +260,7 @@ const ListJobModal = () => {
                         <div key={item.label} className="col-span-1">
                             <CategoryInput
                                 onClick={() => addToOrganization(item.label)}
-                                selected={path === item.label}
+                                selected={organization === item.label}
                                 label={item.label}
                                 icon={item.icon}
                             />
@@ -299,24 +306,7 @@ const ListJobModal = () => {
             </div>
         );
     }
-    if (step === STEPS.RESPONSIBILITIES) {
-        bodyContent = (
-            <div className="flex flex-col gap-8">
-                <Heading
-                    title="Enter responsibilities"
-                    subtitle="responsibilities expected"
-                />
-                <Input
-                    id="responsibilities"
-                    label="Responsibilities"
-                    disabled={isLoading}
-                    register={register}
-                    errors={errors}
-                    required
-                />
-            </div>
-        );
-    }
+    
 
     if (step === STEPS.REQUIREMENTS) {
         bodyContent = (

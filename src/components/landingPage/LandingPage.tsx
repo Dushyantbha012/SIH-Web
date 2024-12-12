@@ -166,7 +166,7 @@ export default function LandingPage() {
               workflows.
             </p>
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="p-6 rounded-lg shadow-lg bg-card bg-gradient-to-r from-cyan-200 to-blue-200">
+              <Card className="p-6 rounded-lg shadow-lg bg-card bg-gradient-to-r from-blue-200 to-purple-200">
                 <CardHeader>
                   <CardTitle>Applicant Tracking Systems</CardTitle>
                   <CardDescription>
@@ -189,7 +189,7 @@ export default function LandingPage() {
                   <hr className="my-4 bg-transparent border-transparent" />
                 </CardContent>
               </Card>
-              <Card className="p-6 rounded-lg shadow-lg bg-card bg-gradient-to-r from-cyan-200 to-blue-200">
+              <Card className="p-6 rounded-lg shadow-lg bg-card bg-gradient-to-r from-blue-200 to-blue-500">
                 <CardHeader>
                   <CardTitle>HRIS Systems</CardTitle>
                   <CardDescription>
