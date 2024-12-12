@@ -1,4 +1,4 @@
-import { Analysis_Result, Score } from "./";
+import { Analysis_Result, Course, Score } from "./";
 
 export type ResponseFromAi = {
     type:"RECOMMENDATION",
@@ -29,5 +29,9 @@ export type ResponseFromAi = {
     type:"CULTURE_FIT", payload: {
         'result': string,
         'emotions': any
+    }
+} |{
+    type:"CHECKPOINTS",payload:{
+        courses: Course[];
     }
 }
