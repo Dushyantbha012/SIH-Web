@@ -13,7 +13,8 @@ import Input from "./Input";
 import Modal from "../modal";
 import ReactMarkdown from "react-markdown";
 import axios from "axios";
-import { generatePdf } from "@/lib/createPdf";
+import jsPDF from 'jspdf';
+
 const pathItems = [
   {
     label: "Software",
@@ -56,6 +57,13 @@ interface FormData {
   jobDescription : string;
 }
 
+const generatePdf = async (resumeData: string): Promise<Blob> => {
+  const doc = new jsPDF();
+  doc.text(resumeData, 10, 10);
+  const pdfBlob = doc.output('blob');
+  return pdfBlob;
+};
+
 const ResumeBuildModal = () => {
   const {
     register,
@@ -81,8 +89,15 @@ const ResumeBuildModal = () => {
       const res = await axios.post("/api/ai/resume_build", {
         job_description: data.jobDescription,
       });
-      setResume(res.data.resume)
-      const pdf = await generatePdf(JSON.stringify(resume))
+      setResume(res.data.resume);
+      const pdfBlob = await generatePdf(res.data.resume);
+      const url = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'resume.pdf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (error) {
       console.error("Error fetching resume:", error);
     } finally {
