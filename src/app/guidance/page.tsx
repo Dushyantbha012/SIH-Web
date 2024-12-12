@@ -69,13 +69,13 @@ export default function CareerGuidancePage() {
 
   return (
     <motion.div 
-      className="min-h-screen bg-gray-50"
+      className="min-h-screen bg-gray-50 "
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       <motion.div 
-        className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white"
+        className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white pt-8"
         initial={{ height: 0 }}
         animate={{ height: "auto" }}
         transition={{ duration: 0.5 }}
