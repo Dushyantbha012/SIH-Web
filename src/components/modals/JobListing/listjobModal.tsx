@@ -140,7 +140,7 @@ const ListJobModal = () => {
     };
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-        if (step !== STEPS.MODE) {
+        if (step !== STEPS.ORGANIZATION) {
             return onNext();
         }
         setIsLoading(true);
@@ -190,7 +190,7 @@ const ListJobModal = () => {
     };
 
     const actionLabel = useMemo(() => {
-        if (step === STEPS.MODE) {
+        if (step === STEPS.ORGANIZATION) {
             return 'Create';
         }
         return 'Next';
