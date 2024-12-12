@@ -39,6 +39,7 @@ export default function Header() {
       { name: "Recommended", href: "/jobs/recommended" },
       { name: "Private", href: "/jobs/private" },
       { name: "Government", href: "/jobs/gov" },
+      { name: "External", href: "/jobs/external" },
     ],
   },
   
