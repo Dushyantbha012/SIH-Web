@@ -82,6 +82,7 @@ export default function Component() {
     jobType: [],
     salary: [],
   });
+  const[message,setMessage]=useState("Fetching");
   const [maxScore,setMaxScore]=useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [sortBy, setSortBy] = useState<string>("relevance");
@@ -107,20 +108,22 @@ export default function Component() {
     setScore(res.data.score);
     var m = -1;
     if(score){
-      if(score.entity_match_score>m){
-        m=score.entity_match_score;
+      if(res.data.score.entity_match_score>m){
+        m=res.data.score.entity_match_score;
       }
-      if(score.final_comprehensive_score>m){
-        m=score.final_comprehensive_score;
+      if(res.data.score.final_comprehensive_score>m){
+        m=res.data.score.final_comprehensive_score;
       }
-      if(score.keyword_match_score>m){
-        m=score.keyword_match_score;
+      if(res.data.score.keyword_match_score>m){
+        m=res.data.score.keyword_match_score;
       }
-      if(score.semantic_similarity>m){
-        m=score.semantic_similarity
+      if(res.data.score.semantic_similarity>m){
+        m=res.data.score.semantic_similarity
       }
       setMaxScore(m);
-      console.log("max score is ", m)
+      console.log("max score is ", m);
+      const mes = `${m > 0.4 ? "90 %" : `${((m / 0.45) * 100).toFixed(2)} %`}`;
+      setMessage(mes);
     }
 
   };
@@ -496,10 +499,10 @@ export default function Component() {
                           </div>
                           <Separator />
                           <div className="grid grid-cols-4 items-center gap-4">
-                            <Label className="text-right">Percentage of match of Job with Profile: </Label>
+                            <Label className="text-right">Percentage match of Job with Profile: </Label>
                             
                             <div className="col-span-3">
-                              {maxScore?maxScore>0.4?"90 % ":`${((maxScore/0.45)*100).toFixed(2)} % `:"Fetching"}
+                              {message}
                             </div>
                           </div>
                          
