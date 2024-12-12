@@ -17,6 +17,7 @@ title: string;
   mode: string;
   jobPath: string; 
   salary: string;
+  organization:string;
 }
 
 export async function POST(req: Request) {
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
     if (!recruiterId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-
+    
     const body: CreateJobRequest = await req.json();
     const {
       title, // Extract the title
@@ -40,8 +41,8 @@ export async function POST(req: Request) {
       mode,
       jobPath,
       salary,
+      organization,
     } = body;
-
  
     if (!description || !responsibilities || !requirements || !experience || !location || !jobType || !mode) {
       return new NextResponse("Missing fields", { status: 400 });
@@ -60,13 +61,12 @@ export async function POST(req: Request) {
         location,
         jobType,
         mode,
-
         jobPath,
-        organization: "Default Organization", // Adjust as needed
+        organization, // Adjust as needed
         salary,
       },
     });
-
+    console.log("JobListing: ",jobListing)
     await db.recruiter.update({
       where: {
         id: user.id,
