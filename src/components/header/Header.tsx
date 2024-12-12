@@ -36,18 +36,20 @@ export default function Header() {
     { name: "Features", href: "#" },
     { name: "About", href: "#" },
     { name: "Jobs", dropdown: [
-        { name: "Recommended", href: "/jobs/recommended" },
-        { name: "Private", href: "/jobs/private" },
-        { name: "Government", href: "/jobs/gov" },
-      ],
-    },
+      { name: "Recommended", href: "/jobs/recommended" },
+      { name: "Private", href: "/jobs/private" },
+      { name: "Government", href: "/jobs/gov" },
+    ],
+  },
+  
   ]
 
   if (!mentor.isMentor) {
     if (jobSeeker.isJobSeeker) {
       navItems.push(
         { name: 'Interview', href: '/interview' },
-        { name: 'Mentor', href: '/mentor' }
+        { name: 'Mentor', href: '/mentor' },
+        { name: "Guidance", href: "/guidance" },
       );
     }
     if (recruiter.isRecruiter) {
