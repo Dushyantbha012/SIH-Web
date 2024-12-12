@@ -59,7 +59,7 @@ export default function Header() {
 
   return (
     <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 px-4 lg:px-6 py-4 transition-all duration-300 ${isScrolled ? "bg-white shadow-md text-white" : "bg-transparent text-transparent"
+      className={`group fixed top-0 left-0 right-0 z-50 px-4 lg:px-6 py-4 transition-all duration-300 ${isScrolled ? "bg-white shadow-md text-white" : "bg-transparent text-transparent hover:bg-white group-hover:text-gray-700"
         }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -70,10 +70,10 @@ export default function Header() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => router.push("/")}
-          className="flex items-center gap-2 text-lg font-semibold cursor-pointer"
+          className=" flex items-center gap-2 text-lg font-semibold cursor-pointer"
         >
-          <BriefcaseIcon className={isScrolled ? "text-primary" : "text-white"} />
-          <span className={isScrolled ? "text-primary" : "text-white"}>CareerBridge</span>
+          <BriefcaseIcon className={isScrolled ? "text-primary" : "text-white group-hover:text-primary"} />
+          <span className={isScrolled ? "text-primary" : "text-white group-hover:text-primary"}>CareerBridge</span>
         </motion.div>
 
         <nav className="hidden lg:flex items-center gap-6">
@@ -86,7 +86,7 @@ export default function Header() {
             >
               {item.dropdown ? (
                 <DropdownMenu>
-                  <DropdownMenuTrigger className={`font-medium hover:text-primary transition-colors ${isScrolled ? "text-gray-700" : "text-white"
+                  <DropdownMenuTrigger className={`font-medium hover:text-primary transition-colors ${isScrolled ? "text-gray-700" : "text-white group-hover:text-gray-700"
                     }`}>
                     {item.name}
                   </DropdownMenuTrigger>
@@ -104,7 +104,7 @@ export default function Header() {
               ) : (
                 <Link
                   href={item.href}
-                  className={`font-medium hover:text-primary transition-colors ${isScrolled ? "text-gray-700" : "text-white"
+                  className={`font-medium hover:text-primary transition-colors ${isScrolled ? "text-gray-700" : "text-white group-hover:text-gray-700"
                     }`}
                 >
                   {item.name}
@@ -134,7 +134,7 @@ export default function Header() {
               <Button
                 variant={isScrolled ? "default" : "secondary"}
                 onClick={() => router.push("/profile")}
-                className={`${isScrolled ? " text-white" : "bg-transparent text-transparent"}`}
+                className={`${isScrolled ? " text-white" : "bg-transparent text-transparent group-hover:text-white group-hover:bg-blue-600"}`}
               >
                 Profile
               </Button>
@@ -148,9 +148,9 @@ export default function Header() {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? (
-              <X className={isScrolled ? "text-primary" : "text-white"} />
+              <X className={isScrolled ? "text-primary" : "text-white group-hover:text-primary"} />
             ) : (
-              <Menu className={isScrolled ? "text-primary" : "text-white"} />
+              <Menu className={isScrolled ? "text-primary" : "text-white group-hover:text-primary"} />
             )}
           </motion.button>
         </div>
